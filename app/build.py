@@ -7,7 +7,7 @@ Output: app/dist/index.html         (single self-contained file; open in any bro
 Requires: pyyaml, markdown, jsonschema  (pip install pyyaml markdown jsonschema)
 No lesson text, catalog data, routing logic, or teaser copy lives in app code.
 """
-import json, sys, glob, re, datetime, pathlib
+import json, sys, glob, datetime, pathlib
 
 try:
     import yaml, markdown
@@ -22,16 +22,8 @@ MD = markdown.Markdown(extensions=["tables"])
 
 def parse_md(path):
     text = pathlib.Path(path).read_text(encoding="utf-8")
-    # Anchor the frontmatter to the very top of the file. Splitting on the literal
-    # '---' misparses a file that has no frontmatter but a '---' horizontal rule in
-    # its body (three parts, wrong ones); the anchored match rejects that instead.
-    m = re.match(r"^\ufeff?---[ \t]*\r?\n(.*?)\r?\n---[ \t]*\r?\n(.*)$", text, re.S)
-    if not m:
-        raise ValueError(f"{path}: no YAML frontmatter (expected a '---' fenced block at the very top)")
-    fm, body = m.group(1), m.group(2)
-    meta = yaml.safe_load(fm) or {}
-    if not isinstance(meta, dict):
-        raise ValueError(f"{path}: frontmatter did not parse as a key/value mapping")
+    _, fm, body = text.split("---", 2)
+    meta = yaml.safe_load(fm)
     for k, v in meta.items():
         if isinstance(v, datetime.date):
             meta[k] = v.isoformat()
@@ -44,46 +36,28 @@ def parse_md(path):
     return meta, MD.convert(body)
 
 
-def load_json(path):
-    """Read a required JSON file, failing with a clear message instead of a traceback."""
-    try:
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        sys.exit(f"BUILD FAILED — missing required file: {path}")
-    except json.JSONDecodeError as e:
-        sys.exit(f"BUILD FAILED — invalid JSON in {path}: {e}")
-
-
 def main():
-    # --- fail fast with the full list of missing inputs, not a one-at-a-time traceback ---
-    required_inputs = [
+    # --- guard: required directories and files must exist before we load anything ---
+    required_paths = [
         CONTENT / "schemas" / "lesson.schema.json",
         CONTENT / "schemas" / "diagnostic.schema.json",
-        CONTENT / "roles.json", CONTENT / "courses.json",
-        CONTENT / "diagnostic.json", CONTENT / "teasers.json",
+        CONTENT / "lessons",
+        ROOT / "library" / "evolution",
     ]
-    missing_inputs = [str(p) for p in required_inputs if not p.exists()]
-    if missing_inputs:
-        sys.exit("BUILD FAILED — missing required content files:\n"
-                 + "\n".join(f" - {mi}" for mi in missing_inputs))
+    missing = [str(p) for p in required_paths if not p.exists()]
+    if missing:
+        print("BUILD FAILED — missing required paths:")
+        for m in missing:
+            print(" -", m)
+        sys.exit(1)
 
     # --- validate content before building (broken content should fail the build, not ship) ---
-    lesson_schema = load_json(CONTENT / "schemas" / "lesson.schema.json")
-    diag_schema = load_json(CONTENT / "schemas" / "diagnostic.schema.json")
+    lesson_schema = json.load(open(CONTENT / "schemas" / "lesson.schema.json"))
+    diag_schema = json.load(open(CONTENT / "schemas" / "diagnostic.schema.json"))
 
     lessons, errors = {}, []
     for p in sorted(glob.glob(str(CONTENT / "lessons" / "*.md"))):
-        try:
-            meta, html = parse_md(p)
-        except Exception as e:
-            errors.append(str(e))
-            continue
-        missing_req = [r for r in lesson_schema.get("required", []) if r not in meta]
-        if missing_req:
-            errors.append(f"{p}: missing required frontmatter field(s): {', '.join(missing_req)}")
-        if "id" not in meta:
-            continue  # id keys the lesson map — cannot proceed without it
+        meta, html = parse_md(p)
         for key, val in meta.items():
             sub = lesson_schema["properties"].get(key)
             if sub is None:
@@ -93,36 +67,26 @@ def main():
                 validate(val, sub)
             except Exception as e:
                 errors.append(f"{p}: {key}: {e}")
-        if meta["id"] in lessons:
-            errors.append(f"{p}: duplicate lesson id '{meta['id']}'")
-            continue
         lessons[meta["id"]] = {"meta": meta, "html": html}
 
     library = {}
     for p in sorted(glob.glob(str(ROOT / "library" / "evolution" / "*.md"))):
-        try:
-            meta, html = parse_md(p)
-        except Exception as e:
-            errors.append(str(e))
-            continue
-        if "id" not in meta:
-            errors.append(f"{p}: missing required frontmatter field 'id'")
-            continue
+        meta, html = parse_md(p)
         library[meta["id"]] = {"meta": meta, "html": html}
 
-    roles = load_json(CONTENT / "roles.json")
-    courses = load_json(CONTENT / "courses.json")
-    diagnostic = load_json(CONTENT / "diagnostic.json")
-    teasers = load_json(CONTENT / "teasers.json")
+    roles = json.load(open(CONTENT / "roles.json"))
+    courses = json.load(open(CONTENT / "courses.json"))
+    diagnostic = json.load(open(CONTENT / "diagnostic.json"))
+    teasers = json.load(open(CONTENT / "teasers.json"))
     validate(diagnostic, diag_schema)
 
-    # referential integrity (tolerate malformed rows — report, don't crash)
+    # referential integrity
     for c in courses:
-        for lid in c.get("lessonIds", []):
+        for lid in c["lessonIds"]:
             if lid not in lessons:
-                errors.append(f"courses.json: {c.get('id', '(no id)')} references missing lesson {lid}")
-    course_ids = {c.get("id") for c in courses}
-    for tier, routes in diagnostic.get("routing", {}).get("tiers", {}).items():
+                errors.append(f"courses.json: {c['id']} references missing lesson {lid}")
+    course_ids = {c["id"] for c in courses}
+    for tier, routes in diagnostic["routing"]["tiers"].items():
         for role, cid in routes.items():
             if cid not in course_ids:
                 errors.append(f"diagnostic.json: tier {tier}/{role} routes to missing course {cid}")
@@ -169,7 +133,7 @@ def main():
     dist.mkdir(exist_ok=True)
     (dist / "index.html").write_text(out, encoding="utf-8")
     print(f"OK: app/dist/index.html — {len(lessons)} lessons, {len(courses)} courses, "
-          f"{len(library)} library entries, {len(teasers.get('teasers', []))} teasers")
+          f"{len(library)} library entries, {len(teasers['teasers'])} teasers")
 
 
 if __name__ == "__main__":
