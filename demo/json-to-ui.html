@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSON → UI — the owned pipeline demo</title>
+<style>
+  /* Trainyard Fleet Design System tokens — from trainyard-design-system/tokens/design-tokens.json v1.0.0 */
+  :root {
+    --primary: #2BAEE4; --purple-accent: #5A4FCF; --deep-charcoal: #231F20;
+    --fleet-roundhouse: #12121a; --fleet-deep-bg: #0a0a0f; --fleet-gold: #D4AF37;
+    --color-success: #22c55e; --color-warning: #f59e0b; --color-error: #ef4444; --color-muted: #6b7280;
+    --space-xs: 0.25rem; --space-sm: 0.5rem; --space-md: 1rem; --space-lg: 1.5rem; --space-xl: 2rem;
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --font-display: 'Space Grotesk', Inter, ui-sans-serif, system-ui, sans-serif;
+    --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem; --text-xl: 1.25rem; --text-2xl: 1.5rem;
+    --focus-ring: 0 0 0 3px #2BAEE4;
+    --sidebar-width: 256px; --topbar-height: 52px;
+    --radius-sm: 0.25rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-full: 9999px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-sans); background: var(--fleet-deep-bg); color: #e7e7ea; height: 100vh; display: flex; flex-direction: column; }
+  header.bar { height: var(--topbar-height); display: flex; align-items: center; gap: var(--space-md); padding: 0 var(--space-lg); background: var(--fleet-roundhouse); border-bottom: 1px solid #26262f; }
+  header.bar h1 { font-family: var(--font-display); font-size: var(--text-xl); margin: 0; color: var(--primary); }
+  header.bar .tag { font-size: var(--text-xs); color: var(--color-muted); }
+  header.bar .states { margin-left: auto; display: flex; gap: var(--space-xs); }
+  .statebtn { font-family: var(--font-sans); font-size: var(--text-xs); background: transparent; color: var(--color-muted); border: 1px solid #26262f; border-radius: var(--radius-full); padding: 4px 12px; cursor: pointer; }
+  .statebtn.active { color: var(--fleet-deep-bg); background: var(--primary); border-color: var(--primary); }
+  main { flex: 1; display: grid; grid-template-columns: minmax(320px, 38%) 1fr; min-height: 0; }
+  .editor { display: flex; flex-direction: column; border-right: 1px solid #26262f; min-height: 0; }
+  .editor .toolbar { padding: var(--space-sm) var(--space-md); display: flex; gap: var(--space-sm); align-items: center; background: var(--fleet-roundhouse); }
+  .editor .toolbar span { font-size: var(--text-xs); color: var(--color-muted); }
+  textarea { flex: 1; resize: none; border: 0; outline: none; background: var(--fleet-deep-bg); color: #cfe8f5; font-family: var(--font-mono); font-size: var(--text-sm); line-height: 1.5; padding: var(--space-md); }
+  #status { padding: var(--space-sm) var(--space-md); font-family: var(--font-mono); font-size: var(--text-xs); border-top: 1px solid #26262f; }
+  #status.ok { color: var(--color-success); } #status.err { color: var(--color-error); }
+  .stage { overflow: auto; padding: var(--space-lg); }
+  .stage .note { font-size: var(--text-xs); color: var(--color-muted); margin-bottom: var(--space-md); }
+
+  /* ---- rendered UI primitives (token-driven, schema-constrained) ---- */
+  .r-screen { background: #f7f8fa; color: var(--deep-charcoal); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,.5); display: grid; min-height: 480px; }
+  .r-region { padding: var(--space-md); min-width: 0; }
+  .r-region[data-type="header"] { grid-area: hd; background: #fff; border-bottom: 1px solid #e4e6ea; display: flex; align-items: center; gap: var(--space-md); flex-wrap: wrap; }
+  .r-region[data-type="sidebar"] { grid-area: sb; background: #eef0f4; border-right: 1px solid #e4e6ea; }
+  .r-region[data-type="content"] { grid-area: ct; background: #f7f8fa; }
+  .r-region[data-type="footer"] { grid-area: ft; background: #fff; border-top: 1px solid #e4e6ea; font-size: var(--text-sm); color: var(--color-muted); }
+  .r-name { font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--color-muted); margin-bottom: var(--space-sm); font-family: var(--font-display); }
+  .c-text h2 { font-family: var(--font-display); font-size: var(--text-2xl); margin: 0; }
+  .c-badge { display: inline-block; font-size: var(--text-xs); font-weight: 600; border-radius: var(--radius-full); padding: 2px 10px; background: var(--primary); color: #fff; }
+  .c-button { font-family: var(--font-sans); font-size: var(--text-sm); background: var(--primary); color: #fff; border: 0; border-radius: var(--radius-md); padding: 8px 16px; cursor: pointer; }
+  .c-button:focus { box-shadow: var(--focus-ring); outline: none; }
+  .c-button.secondary { background: var(--purple-accent); }
+  .c-card { background: #fff; border: 1px solid #e4e6ea; border-radius: var(--radius-md); padding: var(--space-md); margin-bottom: var(--space-md); }
+  .c-metric .v { font-family: var(--font-display); font-size: var(--text-2xl); color: var(--deep-charcoal); }
+  .c-metric .l { font-size: var(--text-xs); color: var(--color-muted); }
+  .c-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: var(--radius-md); overflow: hidden; }
+  .c-table th { text-align: left; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: .05em; color: var(--color-muted); background: #fff; border-bottom: 2px solid #e4e6ea; padding: 10px 12px; }
+  .c-table td { padding: 10px 12px; border-bottom: 1px solid #eef0f4; font-size: var(--text-sm); }
+  .c-list { list-style: none; margin: 0; padding: 0; }
+  .c-list li { padding: 8px 10px; border-radius: var(--radius-sm); font-size: var(--text-sm); cursor: pointer; }
+  .c-list li.active { background: var(--primary); color: #fff; }
+  .c-field { display: block; margin-bottom: var(--space-sm); }
+  .c-field label { display: block; font-size: var(--text-xs); color: var(--color-muted); margin-bottom: 2px; }
+  .c-field input { width: 100%; border: 1px solid #d4d7dd; border-radius: var(--radius-sm); padding: 8px; font-family: var(--font-sans); font-size: var(--text-sm); }
+  .c-field input:focus { box-shadow: var(--focus-ring); outline: none; border-color: var(--primary); }
+  /* states */
+  .st-loading { color: var(--color-muted); font-style: italic; padding: var(--space-lg); text-align: center; }
+  .st-empty { color: var(--color-muted); padding: var(--space-lg); text-align: center; border: 2px dashed #d4d7dd; border-radius: var(--radius-md); }
+  .st-error { color: var(--color-error); background: #fef2f2; border: 1px solid #fecaca; border-radius: var(--radius-md); padding: var(--space-md); }
+  .r-unknown { border: 2px dashed var(--color-error); border-radius: var(--radius-md); padding: var(--space-sm); color: var(--color-error); font-size: var(--text-xs); font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>JSON → UI</h1>
+  <span class="tag">schema-constrained · trainyard tokens v1.0.0 · zero vendors · deterministic</span>
+  <div class="states" id="statebar" title="B1D rule: every screen has states"></div>
+</header>
+<main>
+  <section class="editor">
+    <div class="toolbar"><span>Edit the JSON. The UI re-renders live. Same JSON in, same UI out — every time.</span></div>
+    <textarea id="src" spellcheck="false"></textarea>
+    <div id="status" class="ok">✓ valid</div>
+  </section>
+  <section class="stage">
+    <div class="note">Rendered exclusively from the JSON on the left + <b>your</b> design tokens. Unknown component types render as visible errors — the renderer cannot hallucinate what the schema doesn't define.</div>
+    <div id="out"></div>
+  </section>
+</main>
+<script>
+// ---- The B1D-shaped schema: regions -> components -> dataElements -> states ----
+// Component vocabulary is CLOSED. That's the point: an LLM (or a person) fills the
+// schema; the renderer refuses anything outside it. Structure -> Quality -> Ship.
+const COMPONENT_TYPES = ['text','badge','button','card','metric','table','list','form-field'];
+const REGION_TYPES = ['header','sidebar','content','footer'];
+const STATES = ['populated','loading','empty','error'];
+
+const SAMPLE = {
+  screen: "invoice-list",
+  description: "The screen has a header, a table of invoices, and a side panel. (A1's Stranger Test, rendered.)",
+  regions: [
+    { name: "top bar", type: "header", components: [
+      { type: "text", name: "Invoices", dataElements: ["customer.name"] },
+      { type: "badge", name: "23 open", dataElements: ["invoices.openCount"] },
+      { type: "button", name: "New invoice" },
+      { type: "button", name: "Export", variant: "secondary" }
+    ]},
+    { name: "filters", type: "sidebar", components: [
+      { type: "list", name: "views", dataElements: ["views[]"], items: ["All invoices","Open","Overdue","Paid","Drafts"] },
+      { type: "form-field", name: "Search", dataElements: ["query"] }
+    ]},
+    { name: "invoice table", type: "content", components: [
+      { type: "metric", name: "Outstanding", dataElements: ["invoices.outstandingTotal"], value: "$48,210" },
+      { type: "table", name: "invoices", dataElements: ["invoice.number","invoice.customer","invoice.date","invoice.amount","invoice.status"],
+        rows: [
+          ["INV-1042","Acme Corp","2026-07-02","$12,400","Open"],
+          ["INV-1041","Globex","2026-06-28","$8,150","Overdue"],
+          ["INV-1040","Initech","2026-06-25","$27,660","Paid"]
+        ]}
+    ]},
+    { name: "status bar", type: "footer", components: [
+      { type: "text", name: "Last synced 2 minutes ago", dataElements: ["sync.lastRun"] }
+    ]}
+  ]
+};
+
+// ---- tiny validator: shape errors are shown, never guessed around ----
+function validate(doc) {
+  const errs = [];
+  if (!doc || typeof doc !== 'object') return ['root must be an object'];
+  if (!doc.screen) errs.push('missing "screen" (kebab-case name)');
+  if (!Array.isArray(doc.regions) || !doc.regions.length) errs.push('missing "regions" array');
+  (doc.regions || []).forEach((r, i) => {
+    if (!REGION_TYPES.includes(r.type)) errs.push(`regions[${i}].type "${r.type}" not in [${REGION_TYPES}]`);
+    (r.components || []).forEach((c, j) => {
+      if (!COMPONENT_TYPES.includes(c.type)) errs.push(`regions[${i}].components[${j}].type "${c.type}" not in schema — renderer will flag it`);
+    });
+  });
+  return errs;
+}
+
+// ---- deterministic renderer: one function per component type, tokens only ----
+const esc = s => String(s ?? '').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+const R = {
+  'text': c => `<div class="c-text">${c.name && c.name.length < 40 && !c.name.includes(' ago') ? `<h2>${esc(c.name)}</h2>` : `<span>${esc(c.name)}</span>`}</div>`,
+  'badge': c => `<span class="c-badge">${esc(c.name)}</span>`,
+  'button': c => `<button class="c-button ${c.variant === 'secondary' ? 'secondary' : ''}">${esc(c.name)}</button>`,
+  'card': c => `<div class="c-card">${esc(c.name)}</div>`,
+  'metric': c => `<div class="c-card c-metric"><div class="v">${esc(c.value ?? '—')}</div><div class="l">${esc(c.name)}</div></div>`,
+  'list': c => `<ul class="c-list">${(c.items ?? ['Item one','Item two']).map((it, i) => `<li class="${i===0?'active':''}">${esc(it)}</li>`).join('')}</ul>`,
+  'form-field': c => `<label class="c-field"><label>${esc(c.name)}</label><input placeholder="${esc((c.dataElements||[])[0] ?? '')}"></label>`,
+  'table': (c, state) => {
+    const heads = (c.dataElements ?? []).map(d => esc(d.split('.').pop()));
+    if (state === 'loading') return `<div class="c-card st-loading">Loading ${esc(c.name)}…</div>`;
+    if (state === 'empty') return `<div class="st-empty">No ${esc(c.name)} yet. When there are, they'll appear here.</div>`;
+    if (state === 'error') return `<div class="st-error"><b>Couldn't load ${esc(c.name)}.</b> The data source didn't respond — retry, or check the sync status below.</div>`;
+    return `<table class="c-table"><thead><tr>${heads.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${
+      (c.rows ?? [heads.map(() => '…')]).map(r => `<tr>${r.map(v => `<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  }
+};
+
+function render(doc, state) {
+  const types = (doc.regions || []).map(r => r.type);
+  const areas = [
+    types.includes('header') ? '"hd hd"' : null,
+    `"${types.includes('sidebar') ? 'sb' : 'ct'} ct"`,
+    types.includes('footer') ? '"ft ft"' : null
+  ].filter(Boolean).join(' ');
+  const grid = `grid-template-areas:${areas};grid-template-columns:${types.includes('sidebar') ? 'var(--sidebar-width) 1fr' : '1fr'};grid-template-rows:${types.includes('header') ? 'auto ' : ''}1fr${types.includes('footer') ? ' auto' : ''};`;
+  const regions = (doc.regions || []).map(r => {
+    const comps = (r.components || []).map(c =>
+      R[c.type] ? R[c.type](c, state) : `<div class="r-unknown">unknown component type "${esc(c.type)}" — not in schema, not invented</div>`
+    ).join('\n');
+    return `<div class="r-region" data-type="${esc(r.type)}">${r.type !== 'header' && r.type !== 'footer' ? `<div class="r-name">${esc(r.name)}</div>` : ''}${comps}</div>`;
+  }).join('\n');
+  return `<div class="r-screen" style='${grid}'>${regions}</div>`;
+}
+
+// ---- wiring ----
+const src = document.getElementById('src'), out = document.getElementById('out'), status = document.getElementById('status');
+let state = 'populated';
+const statebar = document.getElementById('statebar');
+STATES.forEach(s => {
+  const b = document.createElement('button');
+  b.className = 'statebtn' + (s === state ? ' active' : ''); b.textContent = s;
+  b.onclick = () => { state = s; document.querySelectorAll('.statebtn').forEach(x => x.classList.toggle('active', x.textContent === s)); refresh(); };
+  statebar.appendChild(b);
+});
+function refresh() {
+  let doc;
+  try { doc = JSON.parse(src.value); }
+  catch (e) { status.textContent = '✗ ' + e.message; status.className = 'err'; return; }
+  const errs = validate(doc);
+  status.textContent = errs.length ? '✗ ' + errs.join(' · ') : '✓ valid — rendered from schema + tokens, nothing else';
+  status.className = errs.length ? 'err' : 'ok';
+  out.innerHTML = render(doc, state);
+}
+src.value = JSON.stringify(SAMPLE, null, 2);
+src.addEventListener('input', refresh);
+refresh();
+</script>
+</body>
+</html>
