@@ -1,1 +1,24 @@
+# Build artifacts
+app/dist/
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Node (if ever)
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+*.key
+
+# DAY-JOB CONFIDENTIAL — must NEVER enter this repo's history.
+# Versioned separately as its own local-only repo. See research/client-confidential/README.md
 /research/client-confidential
+research/client-confidential/

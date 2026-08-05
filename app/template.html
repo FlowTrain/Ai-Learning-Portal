@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Maturity Learning Platform</title>
+<style>
+  :root {
+    --bg: #f7f6f3; --card: #ffffff; --ink: #1f2328; --muted: #6a737d;
+    --accent: #b05730; --accent-soft: #f3e3d9; --line: #e4e1da;
+    --t1: #7a8b99; --t2: #4f8a6d; --t3: #b05730; --t4: #5a4a78;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--ink); line-height: 1.55; }
+  header { background: var(--card); border-bottom: 1px solid var(--line); padding: 14px 22px; display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap; }
+  header h1 { font-size: 1.05rem; margin: 0; letter-spacing: .02em; }
+  header h1 a { color: var(--ink); text-decoration: none; }
+  nav { display: flex; gap: 14px; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: .85rem; }
+  nav a { color: var(--muted); text-decoration: none; padding: 2px 0; border-bottom: 2px solid transparent; }
+  nav a.active, nav a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  #rolebadge { margin-left: auto; font-family: system-ui, sans-serif; font-size: .8rem; color: var(--muted); }
+  #rolebadge b { color: var(--accent); }
+  main { max-width: 880px; margin: 0 auto; padding: 28px 22px 80px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 20px 24px; margin: 14px 0; }
+  .card.clickable { cursor: pointer; transition: border-color .15s; }
+  .card.clickable:hover { border-color: var(--accent); }
+  .tierchip { display: inline-block; font-family: system-ui, sans-serif; font-size: .7rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #fff; border-radius: 999px; padding: 2px 10px; margin-right: 8px; }
+  .tier-aware { background: var(--t1); } .tier-enabled { background: var(--t2); }
+  .tier-fluent { background: var(--t3); } .tier-native { background: var(--t4); }
+  .muted { color: var(--muted); font-size: .9rem; }
+  h2 { font-size: 1.5rem; margin: .4em 0; } h3 { margin: 1.1em 0 .4em; }
+  button, .btn { font-family: system-ui, sans-serif; font-size: .85rem; background: var(--accent); color: #fff; border: 0; border-radius: 8px; padding: 9px 16px; cursor: pointer; }
+  button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+  .rolegrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+  .opt { display: block; margin: 6px 0; font-family: system-ui, sans-serif; font-size: .92rem; }
+  textarea { width: 100%; min-height: 56px; border: 1px solid var(--line); border-radius: 8px; padding: 8px; font-family: system-ui, sans-serif; font-size: .88rem; margin-top: 6px; }
+  .flag { background: #fdf3e7; border-left: 4px solid var(--accent); padding: 10px 14px; margin: 8px 0; font-size: .9rem; }
+  .lesson-body h2 { font-size: 1.2rem; border-bottom: 1px solid var(--line); padding-bottom: .2em; }
+  .lesson-body blockquote { border-left: 3px solid var(--accent); margin-left: 0; padding-left: 16px; color: var(--muted); font-style: italic; }
+  .lesson-body table, .entry-body table { border-collapse: collapse; width: 100%; font-family: system-ui, sans-serif; font-size: .85rem; }
+  .lesson-body td, .lesson-body th, .entry-body td, .entry-body th { border: 1px solid var(--line); padding: 6px 10px; text-align: left; }
+  .teaser .hook { display: none; }
+  .teaser.open .hook { display: block; }
+  .zonebar { display: flex; justify-content: space-between; align-items: center; margin-top: 26px; }
+  .notify-done { color: var(--t2); font-family: system-ui, sans-serif; font-size: .85rem; font-weight: 600; }
+  footer { text-align: center; color: var(--muted); font-family: system-ui, sans-serif; font-size: .75rem; padding: 20px; }
+  /* ---- hand-in + coach worksheet (BACKLOG 10) ---- */
+  .handin { border-top: 3px solid var(--accent); }
+  .handin h3 { margin-top: 0; }
+  .redlines { background: #fdf3e7; border-left: 4px solid var(--accent); padding: 10px 14px; margin: 10px 0; font-family: system-ui, sans-serif; font-size: .85rem; white-space: pre-wrap; }
+  .redlines b { display: block; margin-bottom: 4px; }
+  .rowbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .rowbar .muted { margin-left: auto; }
+  .crit { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin: 10px 0; }
+  .crit > b { font-family: system-ui, sans-serif; font-size: .92rem; }
+  .lvls { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin-top: 8px; }
+  .lvl { display: block; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-family: system-ui, sans-serif; font-size: .8rem; background: #fff; }
+  .lvl:hover { border-color: var(--accent); }
+  .lvl input { margin-right: 6px; }
+  .lvl span { color: var(--muted); display: block; margin-top: 3px; }
+  .lvl.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .lvl-name { font-weight: 600; text-transform: capitalize; }
+  .subitem { display: flex; gap: 10px; align-items: baseline; }
+  .subitem b { font-family: system-ui, sans-serif; font-size: .92rem; }
+  .graded { color: var(--t2); font-family: system-ui, sans-serif; font-size: .8rem; font-weight: 600; }
+  .artifact { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; white-space: pre-wrap; font-family: system-ui, sans-serif; font-size: .85rem; max-height: 340px; overflow: auto; }
+  .donebox { background: #eef6f1; border-left: 4px solid var(--t2); padding: 12px 14px; margin-top: 14px; font-family: system-ui, sans-serif; font-size: .88rem; }
+  .lessonnav { justify-content: space-between; margin-top: 8px; }
+  .lessonnav .muted { margin-left: 0; }
+</style>
+</head>
+<body>
+<header>
+  <h1><a href="#/">AI Maturity Learning Platform</a></h1>
+  <nav>
+    <a href="#/" data-nav="home">Start</a>
+    <a href="#/diagnostic" data-nav="diagnostic">Placement</a>
+    <a href="#/catalog" data-nav="catalog">Courses</a>
+    <a href="#/library" data-nav="library">Evolution Library</a>
+    <a href="#/architect" data-nav="architect">Architect Zone</a>
+    <a href="#/worksheet" data-nav="worksheet">Coach Worksheet</a>
+  </nav>
+  <span id="rolebadge"></span>
+</header>
+<main id="app"></main>
+<!-- Learner-facing chrome: no builder vocabulary. The "built from content/, edit Markdown, rebuild"
+     note lives in app/README.md where builders will actually look for it. (Staircase rule applies to
+     the chrome — see CLAUDE.md hard rules.) -->
+<footer>AI Maturity Learning Platform · {{BUILD_DATE}}</footer>
+<script>
+const DATA = {{DATA_JSON}};
+
+// ---------- state ----------
+const store = {
+  get role() { return localStorage.getItem('role') || ''; },
+  set role(v) { localStorage.setItem('role', v); renderBadge(); },
+  get tier() { return localStorage.getItem('placedTier') || ''; },
+  set tier(v) { localStorage.setItem('placedTier', v); renderBadge(); },
+  interest() { return JSON.parse(localStorage.getItem('interest') || '{}'); },
+  saveInterest(o) { localStorage.setItem('interest', JSON.stringify(o)); },
+  // the learner's own red lines — their A5 artifact, kept so it can appear at the moment of pasting
+  get redlines() { return localStorage.getItem('redlines') || ''; },
+  set redlines(v) { localStorage.setItem('redlines', v); },
+  subs() { return JSON.parse(localStorage.getItem('submissions') || '[]'); },
+  saveSubs(a) { localStorage.setItem('submissions', JSON.stringify(a)); }
+};
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function roleTitle(id) { const r = DATA.roles.find(r => r.id === id); return r ? r.title : id; }
+// Where am I, and what's next? Order comes from courses.json — never hardcoded here.
+// Prefer the course that matches the learner's role (A0/A5–A8 sit in both aware courses).
+function lessonNav(id) {
+  const l = DATA.lessons[id];
+  const holders = DATA.courses.filter(c => c.lessonIds.includes(id));
+  const course = holders.find(c => store.role && c.roleIds.includes(store.role))
+    || holders.find(c => c.id === l.meta.courseId) || holders[0]
+    || DATA.courses.find(c => c.id === l.meta.courseId);
+  if (!course) return { course: { id: l.meta.courseId, title: l.meta.courseId }, prev: null, next: null, pos: '' };
+  const ids = course.lessonIds, i = ids.indexOf(id);
+  const at = k => (k >= 0 && k < ids.length && DATA.lessons[ids[k]])
+    ? { id: ids[k], title: DATA.lessons[ids[k]].meta.title } : null;
+  return { course, prev: at(i - 1), next: at(i + 1), pos: i >= 0 ? `lesson ${i + 1} of ${ids.length}` : '' };
+}
+function renderBadge() {
+  const el = document.getElementById('rolebadge');
+  el.innerHTML = store.role ? `Role: <b>${roleTitle(store.role)}</b>${store.tier ? ` · Placed: <b>Tier ${store.tier}</b>` : ''}` : 'No role selected';
+}
+
+// ---------- interest capture (see docs/interest-capture.md) ----------
+function track(teaserId, event, extra) {
+  const o = store.interest();
+  o[teaserId] = o[teaserId] || { views: 0, opens: 0, notify: [] };
+  if (event === 'view') o[teaserId].views++;
+  if (event === 'open') o[teaserId].opens++;
+  if (event === 'notify') o[teaserId].notify.push(Object.assign({ ts: new Date().toISOString() }, extra));
+  store.saveInterest(o);
+}
+function exportInterest() {
+  const blob = new Blob([JSON.stringify({ exported: new Date().toISOString(), role: store.role, placedTier: store.tier, data: store.interest() }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'interest-signals.json';
+  a.click();
+}
+
+// ---------- hand-in + coach worksheet (BACKLOG 10; docs/submission-loop-plan.md) ----------
+// No accounts, no server, no notifications. Rubrics are read from lesson frontmatter and
+// snapshotted at hand-in time, so a coach always grades against what the learner was actually shown.
+// The staircase rule applies to the chrome, not just the lessons (owner finding, 2026-07-17):
+// the first version of this panel announced "You haven't saved your red lines yet" to a learner on
+// lesson 1 — scolding them about a concept they don't meet until lesson 3. Unmet vocabulary, framed
+// as a failure, aimed at the population least sure it belongs here. Now: a quiet universal line by
+// default; the learner's own card only once they have one.
+function redlinesPanel() {
+  const rl = store.redlines;
+  if (rl) return `<div class="redlines"><b>Before you paste — your red lines:</b>${esc(rl)}
+    <div class="rowbar"><button class="ghost" onclick="editRedlines()">Edit</button></div></div>`;
+  return `<p class="muted">Before you paste: nothing confidential. If you'd hesitate to read it aloud, don't paste it.
+    <button class="ghost" onclick="showRedlinesEditor()" style="margin-left:6px">Add my red lines</button></p>
+    <div id="rl-box" style="display:none"><div class="redlines">
+      <b>Your red lines</b>Three to five lines — what never goes in, and what you do instead. Once saved, they show up here every time you hand something in.
+      <textarea id="rl-edit" placeholder="e.g. Anything with a customer's name in it — instead, I strip the names first."></textarea>
+      <div class="rowbar"><button class="ghost" onclick="saveRedlines()">Save</button></div>
+    </div></div>`;
+}
+function showRedlinesEditor() {
+  const b = document.getElementById('rl-box');
+  b.style.display = 'block';
+  document.getElementById('rl-edit').focus();
+}
+function saveRedlines() { const v = document.getElementById('rl-edit').value.trim(); if (v) { store.redlines = v; render(); } }
+function editRedlines() { store.redlines = ''; render(); }
+
+function handIn(id) {
+  const l = DATA.lessons[id];
+  const ta = document.getElementById('artifact-in');
+  const artifact = (ta.value || '').trim();
+  if (!artifact) { alert('Paste or upload your artifact first.'); return; }
+  const subs = store.subs();
+  subs.push({
+    lessonId: id, lessonTitle: l.meta.title, courseId: l.meta.courseId, tier: l.meta.tier,
+    role: store.role || 'unknown', placedTier: store.tier || 'unplaced',
+    artifact,
+    rubric: l.meta.rubric || null, // snapshot: grade against what the learner was shown
+    submittedAt: new Date().toISOString()
+  });
+  store.saveSubs(subs);
+  render();
+}
+function uploadArtifact(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { document.getElementById('artifact-in').value = r.result; };
+  r.readAsText(f);
+}
+function exportSubs() {
+  const blob = new Blob([JSON.stringify({ exported: new Date().toISOString(), submissions: store.subs() }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'hand-ins.json';
+  a.click();
+}
+function importSubs(ev) {
+  const f = ev.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const o = JSON.parse(r.result);
+      const incoming = Array.isArray(o) ? o : (o.submissions || []);
+      if (!incoming.length) { alert('No hand-ins found in that file.'); return; }
+      store.saveSubs(store.subs().concat(incoming));
+      render();
+    } catch (e) { alert('That file could not be read as hand-ins.'); }
+  };
+  r.readAsText(f);
+}
+// ci is the criterion's index in the snapshotted rubric — passing the index, not the string,
+// keeps quotes out of the inline handler and out of everyone's afternoon.
+function grade(i, ci, level) {
+  const subs = store.subs();
+  const s = subs[i];
+  const criterion = (s.rubric || [])[ci] && (s.rubric || [])[ci].criterion;
+  if (!criterion) return;
+  s.grades = s.grades || [];
+  const row = s.grades.find(g => g.criterion === criterion);
+  if (row) row.level = level; else s.grades.push({ criterion, level });
+  s.gradedAt = new Date().toISOString();
+  store.saveSubs(subs);
+  render();
+}
+function saveNote(i) {
+  const subs = store.subs();
+  const next = document.getElementById('next-' + i).value.trim();
+  const anyEmerging = (subs[i].grades || []).some(g => g.level === 'emerging');
+  // The judge's constitution requires exactly one next step, and "emerging" may never appear without
+  // the concrete move to "working". The human worksheet is held to the same contract — otherwise the
+  // gold set wouldn't match the judge's output shape and the agreement test couldn't compare them.
+  if (anyEmerging && !next) {
+    alert('This hand-in is marked emerging on at least one criterion.\n\nEmerging is a position on a staircase, not a verdict — so it needs the one concrete step that gets them to working. Add it before saving.');
+    document.getElementById('next-' + i).focus();
+    return;
+  }
+  subs[i].nextStep = next;
+  subs[i].misconception = document.getElementById('mis-' + i).value;
+  subs[i].gradedBy = document.getElementById('by-' + i).value;
+  subs[i].gradedAt = new Date().toISOString();
+  store.saveSubs(subs);
+  const el = document.getElementById('saved-' + i);
+  if (el) el.textContent = 'Saved.';
+}
+function dropSub(i) {
+  if (!confirm('Remove this hand-in from this browser? This cannot be undone.')) return;
+  const subs = store.subs(); subs.splice(i, 1); store.saveSubs(subs); render();
+}
+
+// ---------- diagnostic (pure data from content/diagnostic.json) ----------
+function placeTier(ans) { // conjunctive ladder per placementRule
+  const t2 = ans.q1_unprompted_use === 'yes' && ans.q2_prompt_shape === 'yes';
+  const t3 = t2 && ans.q3_reuse === 'maintain' && ans.q4_workflow_design === 'yes';
+  const t4 = t3 && ans.q5_system_design === 'yes';
+  return t4 ? 4 : t3 ? 3 : t2 ? 2 : 1;
+}
+function diagFlags(ans, tier) {
+  const f = [];
+  if (ans.q5_system_design === 'yes' && tier < 4) f.push(DATA.diagnostic.flags[0]);
+  if (ans.q4_workflow_design === 'yes' && tier < 3) f.push(DATA.diagnostic.flags[1]);
+  if (ans.q3_reuse === 'maintain' && tier < 2) f.push(DATA.diagnostic.flags[2]);
+  return f;
+}
+
+// ---------- views ----------
+const views = {
+  home() {
+    return `<h2>Who are you?</h2>
+    <p class="muted">Pick your role. Everything — courses, placement, recommendations — keys off it.</p>
+    <div class="rolegrid">${DATA.roles.map(r => `
+      <div class="card clickable" onclick="store.role='${r.id}';location.hash='#/diagnostic'">
+        <b>${r.title}</b><br><span class="muted">${r.description}</span>
+      </div>`).join('')}</div>`;
+  },
+
+  diagnostic() {
+    if (!store.role) { location.hash = '#/'; return ''; }
+    const d = DATA.diagnostic;
+    return `<h2>The Monday-Morning Diagnostic</h2>
+    <p class="muted">${d.principle}</p>
+    <form id="diagform" onsubmit="return submitDiag(event)">
+      ${d.checks.map((c, i) => `<div class="card">
+        <b>${i + 1}. ${c.question}</b>
+        ${c.options.map(o => `<label class="opt"><input type="radio" name="${c.id}" value="${o}" required> ${o}</label>`).join('')}
+        <label class="opt muted">${c.evidencePrompt}<textarea name="${c.id}_evidence" placeholder="Evidence — a coach will read this." required></textarea></label>
+      </div>`).join('')}
+      <button type="submit">Place me</button>
+    </form>
+    <div id="diagresult"></div>`;
+  },
+
+  catalog() {
+    const role = store.role;
+    const list = DATA.courses.filter(c => !role || c.roleIds.includes(role));
+    return `<h2>Courses${role ? ` for ${roleTitle(role)}` : ''}</h2>
+    ${list.map(c => `<div class="card clickable" onclick="location.hash='#/course/${c.id}'">
+      <span class="tierchip tier-${c.tier}">${c.tier}</span><b>${c.title}</b>
+      <p class="muted">${c.description}</p>
+      <span class="muted">${c.lessonIds.length} lessons · ${c.totalCredits} credits</span>
+    </div>`).join('')}
+    ${role ? `<p class="muted">Not seeing your level? <a href="#/diagnostic">Take the placement diagnostic.</a></p>` : ''}`;
+  },
+
+  course(id) {
+    const c = DATA.courses.find(x => x.id === id);
+    if (!c) return '<p>Course not found.</p>';
+    return `<h2><span class="tierchip tier-${c.tier}">${c.tier}</span>${c.title}</h2>
+    <p>${c.description}</p>
+    ${c.lessonIds.map(lid => {
+      const l = DATA.lessons[lid];
+      return l ? `<div class="card clickable" onclick="location.hash='#/lesson/${lid}'">
+        <b>${lid} — ${l.meta.title}</b><br>
+        <span class="muted">${l.meta.durationMin} min · rung ${l.meta.staircaseRung || '?'}</span>
+      </div>` : '';
+    }).join('')}`;
+  },
+
+  lesson(id) {
+    const l = DATA.lessons[id];
+    if (!l) return '<p>Lesson not found.</p>';
+    const refs = (l.meta.libraryRefs || []).map(r => `<a href="#/library/${r}">${r}</a>`).join(', ');
+    const mine = store.subs().filter(s => s.lessonId === id);
+    const nav = lessonNav(id);
+    return `<p><a href="#/course/${nav.course.id}">← ${nav.course.title}</a></p>
+    <span class="tierchip tier-${l.meta.tier}">${l.meta.tier}</span>
+    <span class="muted">${l.meta.durationMin} min · staircase rung ${l.meta.staircaseRung || '—'}${nav.pos ? ' · ' + nav.pos : ''}${refs ? ' · library: ' + refs : ''}</span>
+    <div class="lesson-body">${l.html}</div>
+    <div class="card handin">
+      <h3>Hand in your artifact</h3>
+      <p class="muted">Your coach reads this and talks it through with you. There's no score and nothing to pass or fail — the rubric describes where a thing is, not how good you are.</p>
+      ${redlinesPanel()}
+      <textarea id="artifact-in" placeholder="Paste your artifact here — or upload the file you made."></textarea>
+      <div class="rowbar">
+        <button onclick="handIn('${id}')">Hand in</button>
+        <label class="btn ghost" style="display:inline-block">Upload a file<input type="file" accept=".md,.txt,.json" onchange="uploadArtifact(event)" style="display:none"></label>
+        <span class="muted">Stays in this browser until you export it.</span>
+      </div>
+      ${mine.length ? `<div class="donebox">
+        <b>✓ Handed in.</b> Nothing else to do here — your coach picks it up and you'll talk it through together. <b>You don't need to wait for that to keep going.</b>
+        ${nav.next ? `<div class="rowbar"><a class="btn" href="#/lesson/${nav.next.id}">Next: ${nav.next.id} — ${esc(nav.next.title)} →</a></div>`
+                   : `<div class="rowbar"><a class="btn" href="#/course/${nav.course.id}">That's the last one — back to ${esc(nav.course.title)}</a></div>`}
+      </div>` : ''}
+      ${l.meta.rubric ? '' : '<p class="muted" style="margin-top:14px">This lesson has no rubric yet, so your coach will read it in prose rather than against criteria.</p>'}
+    </div>
+    <div class="rowbar lessonnav">
+      ${nav.prev ? `<a class="btn ghost" href="#/lesson/${nav.prev.id}">← ${nav.prev.id}</a>` : '<span></span>'}
+      <a class="btn ghost" href="#/course/${nav.course.id}">All lessons</a>
+      ${nav.next ? `<a class="btn ghost" href="#/lesson/${nav.next.id}">${nav.next.id} →</a>` : '<span></span>'}
+    </div>`;
+  },
+
+  worksheet() {
+    const subs = store.subs();
+    const head = `<h2>Coach worksheet</h2>
+    <p class="muted">Hand-ins from this browser. Grade against the lesson's own rubric — the one the learner was shown when they handed it in. <b>Emerging is a position on a staircase, not a verdict.</b> Say what you saw, then give one next step.</p>
+    <div class="rowbar">
+      <label class="btn ghost" style="display:inline-block">Import hand-ins<input type="file" accept=".json" onchange="importSubs(event)" style="display:none"></label>
+      <button class="ghost" onclick="exportSubs()">Export all</button>
+      <span class="muted">${subs.length} hand-in${subs.length === 1 ? '' : 's'} · nothing leaves this browser unless you export it.</span>
+    </div>`;
+    if (!subs.length) return head + `<div class="card"><p class="muted">Nothing handed in yet. Learners hand in from the bottom of any lesson page — or import a file someone exported.</p></div>`;
+    return head + subs.map((s, i) => {
+      const rubric = s.rubric || [];
+      const got = c => (s.grades || []).find(g => g.criterion === c);
+      return `<div class="card">
+        <div class="subitem">
+          <span class="tierchip tier-${s.tier}">${s.tier}</span>
+          <b>${esc(s.lessonId)} — ${esc(s.lessonTitle)}</b>
+          ${s.gradedAt ? '<span class="graded">✓ evaluated</span>' : ''}
+        </div>
+        <p class="muted">${roleTitle(s.role)} · placed ${esc(s.placedTier)} · handed in ${new Date(s.submittedAt).toLocaleString()}</p>
+        <div class="artifact">${esc(s.artifact)}</div>
+        ${rubric.length ? rubric.map((c, ci) => `<div class="crit">
+          <b>${esc(c.criterion)}</b>
+          <div class="lvls">
+            ${['emerging', 'working', 'strong'].map(lv => `<label class="lvl ${got(c.criterion) && got(c.criterion).level === lv ? 'sel' : ''}">
+              <input type="radio" name="g-${i}-${ci}" ${got(c.criterion) && got(c.criterion).level === lv ? 'checked' : ''}
+                onchange="grade(${i}, ${ci}, '${lv}')">
+              <span class="lvl-name">${lv}</span><span>${esc(c[lv] || '')}</span>
+            </label>`).join('')}
+          </div>
+        </div>`).join('')
+        : '<p class="muted">No rubric on this lesson — read it in prose and note what you saw below.</p>'}
+        <label class="opt"><b>One next step</b> — the single thing they do next. Required: nothing here may be marked <i>emerging</i> without it.
+          <textarea id="next-${i}" placeholder="One concrete move. Not three. What does 'working' look like from where they are — and what's the one action that gets them there?">${esc(s.nextStep || '')}</textarea></label>
+        <label class="opt muted">Misconception observed — optional, and it isn't about the learner. This feeds the misconception log and gets the <i>lesson</i> fixed.
+          <textarea id="mis-${i}" placeholder="What did the lesson fail to make clear? This is a content defect report.">${esc(s.misconception || '')}</textarea></label>
+        <div class="rowbar">
+          <input id="by-${i}" placeholder="Your name (optional)" value="${esc(s.gradedBy || '')}" style="font-family:system-ui,sans-serif;font-size:.85rem;padding:8px;border:1px solid var(--line);border-radius:8px">
+          <button onclick="saveNote(${i})">Save</button>
+          <button class="ghost" onclick="dropSub(${i})">Remove</button>
+          <span class="muted" id="saved-${i}"></span>
+        </div>
+      </div>`;
+    }).join('');
+  },
+
+  library(id) {
+    if (id) {
+      const e = DATA.library[id];
+      if (!e) return '<p>Entry not found.</p>';
+      return `<p><a href="#/library">← Evolution Library</a></p>
+      <span class="muted">status: ${e.meta.status} · last reviewed ${e.meta.last_reviewed} · ${e.meta.review_cadence}</span>
+      <div class="entry-body">${e.html}</div>`;
+    }
+    return `<h2>The Evolution Library</h2>
+    <p class="muted">Practices are versioned, not eternal. Each entry tracks how a practice changed as models changed — what's current, what's deprecated, and where the old way is still right.</p>
+    ${Object.values(DATA.library).map(e => `<div class="card clickable" onclick="location.hash='#/library/${e.meta.id}'">
+      <b>${e.meta.practice}</b> <span class="muted">(${e.meta.id})</span><br>
+      <span class="muted">status: ${e.meta.status} · reviewed ${e.meta.last_reviewed} · cited by ${(e.meta.referenced_by || []).join(', ')}</span>
+    </div>`).join('')}`;
+  },
+
+  architect() {
+    const t = DATA.teasers;
+    t.teasers.forEach(x => track(x.id, 'view'));
+    return `<h2>${t.zoneTitle}</h2>
+    <p class="muted">${t.zoneIntro}</p>
+    ${t.teasers.map(x => {
+      const done = (store.interest()[x.id] || { notify: [] }).notify.length > 0;
+      return `<div class="card clickable teaser" id="${x.id}" onclick="openTeaser('${x.id}')">
+        <span class="tierchip tier-${x.plannedTier}">${x.plannedTier} · coming</span><b>${x.title}</b>
+        <div class="hook"><p>${x.hook}</p>
+          ${done ? '<span class="notify-done">✓ On the list</span>'
+                 : `<button onclick="event.stopPropagation();notifyMe('${x.id}')">Notify me when this exists</button>`}
+        </div>
+      </div>`;
+    }).join('')}
+    <div class="zonebar"><span class="muted">Signals stay in this browser until exported.</span>
+    <button class="ghost" onclick="exportInterest()">Export interest data</button></div>`;
+  }
+};
+
+function openTeaser(id) {
+  const el = document.getElementById(id);
+  if (!el.classList.contains('open')) { el.classList.add('open'); track(id, 'open'); }
+}
+function notifyMe(id) {
+  track(id, 'notify', { role: store.role || 'unknown', placedTier: store.tier || 'unplaced' });
+  render();
+}
+function submitDiag(ev) {
+  ev.preventDefault();
+  const f = new FormData(ev.target), ans = {}, evidence = {};
+  DATA.diagnostic.checks.forEach(c => {
+    ans[c.id] = f.get(c.id);
+    evidence[c.id] = f.get(c.id + '_evidence') || '';
+  });
+  const tier = placeTier(ans);
+  store.tier = String(tier);
+  store.diagAnswers = ans;
+  store.diagEvidence = evidence;
+  const course = DATA.diagnostic.routing.tiers[String(tier)][store.role];
+  const c = DATA.courses.find(x => x.id === course);
+  const flags = diagFlags(ans, tier);
+  document.getElementById('diagresult').innerHTML = `<div class="card">
+    <h3>Placement: Tier ${tier}</h3>
+    <p>Recommended course:</p>
+    <div class="card clickable" onclick="location.hash='#/course/${course}'">
+      <span class="tierchip tier-${c.tier}">${c.tier}</span><b>${c.title}</b>
+      <p class="muted">${c.description}</p></div>
+    ${flags.map(fl => `<div class="flag"><b>To discuss with your coach:</b> ${fl.meaning}</div>`).join('')}
+    <p class="muted">Placement is confirmed by a coach against your evidence — this is a starting point, not a verdict.</p>
+  </div>`;
+  document.getElementById('diagresult').scrollIntoView({ behavior: 'smooth' });
+  return false;
+}
+
+// ---------- router ----------
+function render() {
+  const [_, view, arg] = (location.hash || '#/').split('/');
+  const v = view || 'home';
+  const fn = { '': 'home', 'diagnostic': 'diagnostic', 'catalog': 'catalog', 'course': 'course', 'lesson': 'lesson', 'library': 'library', 'architect': 'architect', 'worksheet': 'worksheet' }[v] || 'home';
+  document.getElementById('app').innerHTML = views[fn](arg);
+  document.querySelectorAll('nav a').forEach(a => a.classList.toggle('active', a.dataset.nav === fn || (fn === 'course' || fn === 'lesson') && a.dataset.nav === 'catalog'));
+  window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', render);
+renderBadge();
+render();
+</script>
+</body>
+</html>
