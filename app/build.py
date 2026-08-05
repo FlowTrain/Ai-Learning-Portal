@@ -37,6 +37,20 @@ def parse_md(path):
 
 
 def main():
+    # --- guard: required directories and files must exist before we load anything ---
+    required_paths = [
+        CONTENT / "schemas" / "lesson.schema.json",
+        CONTENT / "schemas" / "diagnostic.schema.json",
+        CONTENT / "lessons",
+        ROOT / "library" / "evolution",
+    ]
+    missing = [str(p) for p in required_paths if not p.exists()]
+    if missing:
+        print("BUILD FAILED — missing required paths:")
+        for m in missing:
+            print(" -", m)
+        sys.exit(1)
+
     # --- validate content before building (broken content should fail the build, not ship) ---
     lesson_schema = json.load(open(CONTENT / "schemas" / "lesson.schema.json"))
     diag_schema = json.load(open(CONTENT / "schemas" / "diagnostic.schema.json"))

@@ -28,7 +28,7 @@ The source-of-truth for a four-tier AI upskilling platform (AI-Aware → AI-Enab
 - Never treat the platform owner's level as the learner baseline — the curse of knowledge is this project's #1 documented risk (see maturity-model.md, design rule 2).
 - Never delete an Evolution Library era or deprecated-pattern item; supersede with a new dated section. History is the product.
 - Assessment is artifacts + observed behaviors, never quizzes.
-- Do not invent maturity statistics, vendor claims, or model behaviors; unsourced claims go to open_questions.
+- Do not invent maturity statistics, vendor claims, or model behaviors; unsourced claims go to `docs/open-questions.md`.
 
 ## Current focus
 - ~~Tier 1 Monday-Morning On-Ramp rewrite~~ Done 2026-07-10 (A0 added; A-series rewritten/tagged).

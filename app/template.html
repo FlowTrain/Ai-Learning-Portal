@@ -287,7 +287,7 @@ const views = {
       ${d.checks.map((c, i) => `<div class="card">
         <b>${i + 1}. ${c.question}</b>
         ${c.options.map(o => `<label class="opt"><input type="radio" name="${c.id}" value="${o}" required> ${o}</label>`).join('')}
-        <label class="opt muted">${c.evidencePrompt}<textarea name="${c.id}_evidence" placeholder="Evidence — a coach will read this."></textarea></label>
+        <label class="opt muted">${c.evidencePrompt}<textarea name="${c.id}_evidence" placeholder="Evidence — a coach will read this." required></textarea></label>
       </div>`).join('')}
       <button type="submit">Place me</button>
     </form>
@@ -371,7 +371,7 @@ const views = {
         <div class="subitem">
           <span class="tierchip tier-${s.tier}">${s.tier}</span>
           <b>${esc(s.lessonId)} — ${esc(s.lessonTitle)}</b>
-          ${s.gradedAt ? '<span class="graded">✓ graded</span>' : ''}
+          ${s.gradedAt ? '<span class="graded">✓ evaluated</span>' : ''}
         </div>
         <p class="muted">${roleTitle(s.role)} · placed ${esc(s.placedTier)} · handed in ${new Date(s.submittedAt).toLocaleString()}</p>
         <div class="artifact">${esc(s.artifact)}</div>
@@ -446,10 +446,15 @@ function notifyMe(id) {
 }
 function submitDiag(ev) {
   ev.preventDefault();
-  const f = new FormData(ev.target), ans = {};
-  DATA.diagnostic.checks.forEach(c => ans[c.id] = f.get(c.id));
+  const f = new FormData(ev.target), ans = {}, evidence = {};
+  DATA.diagnostic.checks.forEach(c => {
+    ans[c.id] = f.get(c.id);
+    evidence[c.id] = f.get(c.id + '_evidence') || '';
+  });
   const tier = placeTier(ans);
   store.tier = String(tier);
+  store.diagAnswers = ans;
+  store.diagEvidence = evidence;
   const course = DATA.diagnostic.routing.tiers[String(tier)][store.role];
   const c = DATA.courses.find(x => x.id === course);
   const flags = diagFlags(ans, tier);

@@ -2,7 +2,7 @@
 
 **A four-level program that meets you where you actually are.**
 
-*Version 1.1 · Reviewed against the live catalog on 2026-07-17 · 8 classes · 32 lessons*
+*Version 1.1 · Snapshot as of 2026-07-17 · 8 classes · 32 lessons (see `docs/lesson-index.md` for current counts)*
 
 ---
 
