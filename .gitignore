@@ -20,4 +20,5 @@ Thumbs.db
 
 # DAY-JOB CONFIDENTIAL — must NEVER enter this repo's history.
 # Versioned separately as its own local-only repo. See research/client-confidential/README.md
+/research/client-confidential
 research/client-confidential/
