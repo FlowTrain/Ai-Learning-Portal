@@ -122,7 +122,7 @@ function lessonNav(id) {
 }
 function renderBadge() {
   const el = document.getElementById('rolebadge');
-  el.innerHTML = store.role ? `Role: <b>${roleTitle(store.role)}</b>${store.tier ? ` · Placed: <b>Tier ${store.tier}</b>` : ''}` : 'No role selected';
+  el.innerHTML = store.role ? `Role: <b>${esc(roleTitle(store.role))}</b>${store.tier ? ` · Placed: <b>Tier ${esc(store.tier)}</b>` : ''}` : 'No role selected';
 }
 
 // ---------- interest capture (see docs/interest-capture.md) ----------
@@ -274,7 +274,7 @@ const views = {
     <p class="muted">Pick your role. Everything — courses, placement, recommendations — keys off it.</p>
     <div class="rolegrid">${DATA.roles.map(r => `
       <div class="card clickable" onclick="store.role='${r.id}';location.hash='#/diagnostic'">
-        <b>${r.title}</b><br><span class="muted">${r.description}</span>
+        <b>${esc(r.title)}</b><br><span class="muted">${esc(r.description)}</span>
       </div>`).join('')}</div>`;
   },
 
@@ -282,12 +282,12 @@ const views = {
     if (!store.role) { location.hash = '#/'; return ''; }
     const d = DATA.diagnostic;
     return `<h2>The Monday-Morning Diagnostic</h2>
-    <p class="muted">${d.principle}</p>
+    <p class="muted">${esc(d.principle)}</p>
     <form id="diagform" onsubmit="return submitDiag(event)">
       ${d.checks.map((c, i) => `<div class="card">
-        <b>${i + 1}. ${c.question}</b>
-        ${c.options.map(o => `<label class="opt"><input type="radio" name="${c.id}" value="${o}" required> ${o}</label>`).join('')}
-        <label class="opt muted">${c.evidencePrompt}<textarea name="${c.id}_evidence" placeholder="Evidence — a coach will read this." required></textarea></label>
+        <b>${i + 1}. ${esc(c.question)}</b>
+        ${c.options.map(o => `<label class="opt"><input type="radio" name="${esc(c.id)}" value="${esc(o)}" required> ${esc(o)}</label>`).join('')}
+        <label class="opt muted">${esc(c.evidencePrompt)}<textarea name="${esc(c.id)}_evidence" placeholder="Evidence — a coach will read this."></textarea></label>
       </div>`).join('')}
       <button type="submit">Place me</button>
     </form>
@@ -297,10 +297,10 @@ const views = {
   catalog() {
     const role = store.role;
     const list = DATA.courses.filter(c => !role || c.roleIds.includes(role));
-    return `<h2>Courses${role ? ` for ${roleTitle(role)}` : ''}</h2>
+    return `<h2>Courses${role ? ` for ${esc(roleTitle(role))}` : ''}</h2>
     ${list.map(c => `<div class="card clickable" onclick="location.hash='#/course/${c.id}'">
-      <span class="tierchip tier-${c.tier}">${c.tier}</span><b>${c.title}</b>
-      <p class="muted">${c.description}</p>
+      <span class="tierchip tier-${c.tier}">${c.tier}</span><b>${esc(c.title)}</b>
+      <p class="muted">${esc(c.description)}</p>
       <span class="muted">${c.lessonIds.length} lessons · ${c.totalCredits} credits</span>
     </div>`).join('')}
     ${role ? `<p class="muted">Not seeing your level? <a href="#/diagnostic">Take the placement diagnostic.</a></p>` : ''}`;
@@ -309,12 +309,12 @@ const views = {
   course(id) {
     const c = DATA.courses.find(x => x.id === id);
     if (!c) return '<p>Course not found.</p>';
-    return `<h2><span class="tierchip tier-${c.tier}">${c.tier}</span>${c.title}</h2>
-    <p>${c.description}</p>
+    return `<h2><span class="tierchip tier-${c.tier}">${c.tier}</span>${esc(c.title)}</h2>
+    <p>${esc(c.description)}</p>
     ${c.lessonIds.map(lid => {
       const l = DATA.lessons[lid];
       return l ? `<div class="card clickable" onclick="location.hash='#/lesson/${lid}'">
-        <b>${lid} — ${l.meta.title}</b><br>
+        <b>${lid} — ${esc(l.meta.title)}</b><br>
         <span class="muted">${l.meta.durationMin} min · rung ${l.meta.staircaseRung || '?'}</span>
       </div>` : '';
     }).join('')}`;
@@ -323,10 +323,10 @@ const views = {
   lesson(id) {
     const l = DATA.lessons[id];
     if (!l) return '<p>Lesson not found.</p>';
-    const refs = (l.meta.libraryRefs || []).map(r => `<a href="#/library/${r}">${r}</a>`).join(', ');
+    const refs = (l.meta.libraryRefs || []).map(r => `<a href="#/library/${r}">${esc(r)}</a>`).join(', ');
     const mine = store.subs().filter(s => s.lessonId === id);
     const nav = lessonNav(id);
-    return `<p><a href="#/course/${nav.course.id}">← ${nav.course.title}</a></p>
+    return `<p><a href="#/course/${nav.course.id}">← ${esc(nav.course.title)}</a></p>
     <span class="tierchip tier-${l.meta.tier}">${l.meta.tier}</span>
     <span class="muted">${l.meta.durationMin} min · staircase rung ${l.meta.staircaseRung || '—'}${nav.pos ? ' · ' + nav.pos : ''}${refs ? ' · library: ' + refs : ''}</span>
     <div class="lesson-body">${l.html}</div>
@@ -371,7 +371,7 @@ const views = {
         <div class="subitem">
           <span class="tierchip tier-${s.tier}">${s.tier}</span>
           <b>${esc(s.lessonId)} — ${esc(s.lessonTitle)}</b>
-          ${s.gradedAt ? '<span class="graded">✓ evaluated</span>' : ''}
+          ${s.gradedAt ? '<span class="graded">✓ graded</span>' : ''}
         </div>
         <p class="muted">${roleTitle(s.role)} · placed ${esc(s.placedTier)} · handed in ${new Date(s.submittedAt).toLocaleString()}</p>
         <div class="artifact">${esc(s.artifact)}</div>
@@ -405,27 +405,27 @@ const views = {
       const e = DATA.library[id];
       if (!e) return '<p>Entry not found.</p>';
       return `<p><a href="#/library">← Evolution Library</a></p>
-      <span class="muted">status: ${e.meta.status} · last reviewed ${e.meta.last_reviewed} · ${e.meta.review_cadence}</span>
+      <span class="muted">status: ${esc(e.meta.status)} · last reviewed ${esc(e.meta.last_reviewed)} · ${esc(e.meta.review_cadence)}</span>
       <div class="entry-body">${e.html}</div>`;
     }
     return `<h2>The Evolution Library</h2>
     <p class="muted">Practices are versioned, not eternal. Each entry tracks how a practice changed as models changed — what's current, what's deprecated, and where the old way is still right.</p>
     ${Object.values(DATA.library).map(e => `<div class="card clickable" onclick="location.hash='#/library/${e.meta.id}'">
-      <b>${e.meta.practice}</b> <span class="muted">(${e.meta.id})</span><br>
-      <span class="muted">status: ${e.meta.status} · reviewed ${e.meta.last_reviewed} · cited by ${(e.meta.referenced_by || []).join(', ')}</span>
+      <b>${esc(e.meta.practice)}</b> <span class="muted">(${esc(e.meta.id)})</span><br>
+      <span class="muted">status: ${esc(e.meta.status)} · reviewed ${esc(e.meta.last_reviewed)} · cited by ${esc((e.meta.referenced_by || []).join(', '))}</span>
     </div>`).join('')}`;
   },
 
   architect() {
     const t = DATA.teasers;
     t.teasers.forEach(x => track(x.id, 'view'));
-    return `<h2>${t.zoneTitle}</h2>
-    <p class="muted">${t.zoneIntro}</p>
+    return `<h2>${esc(t.zoneTitle)}</h2>
+    <p class="muted">${esc(t.zoneIntro)}</p>
     ${t.teasers.map(x => {
       const done = (store.interest()[x.id] || { notify: [] }).notify.length > 0;
       return `<div class="card clickable teaser" id="${x.id}" onclick="openTeaser('${x.id}')">
-        <span class="tierchip tier-${x.plannedTier}">${x.plannedTier} · coming</span><b>${x.title}</b>
-        <div class="hook"><p>${x.hook}</p>
+        <span class="tierchip tier-${x.plannedTier}">${x.plannedTier} · coming</span><b>${esc(x.title)}</b>
+        <div class="hook"><p>${esc(x.hook)}</p>
           ${done ? '<span class="notify-done">✓ On the list</span>'
                  : `<button onclick="event.stopPropagation();notifyMe('${x.id}')">Notify me when this exists</button>`}
         </div>
@@ -446,25 +446,22 @@ function notifyMe(id) {
 }
 function submitDiag(ev) {
   ev.preventDefault();
-  const f = new FormData(ev.target), ans = {}, evidence = {};
-  DATA.diagnostic.checks.forEach(c => {
-    ans[c.id] = f.get(c.id);
-    evidence[c.id] = f.get(c.id + '_evidence') || '';
-  });
+  const f = new FormData(ev.target), ans = {};
+  DATA.diagnostic.checks.forEach(c => ans[c.id] = f.get(c.id));
   const tier = placeTier(ans);
   store.tier = String(tier);
-  store.diagAnswers = ans;
-  store.diagEvidence = evidence;
-  const course = DATA.diagnostic.routing.tiers[String(tier)][store.role];
-  const c = DATA.courses.find(x => x.id === course);
+  const routes = (DATA.diagnostic.routing.tiers || {})[String(tier)] || {};
+  const course = routes[store.role];
+  const c = course ? DATA.courses.find(x => x.id === course) : null;
   const flags = diagFlags(ans, tier);
   document.getElementById('diagresult').innerHTML = `<div class="card">
-    <h3>Placement: Tier ${tier}</h3>
-    <p>Recommended course:</p>
+    <h3>Placement: Tier ${esc(tier)}</h3>
+    ${c ? `<p>Recommended course:</p>
     <div class="card clickable" onclick="location.hash='#/course/${course}'">
-      <span class="tierchip tier-${c.tier}">${c.tier}</span><b>${c.title}</b>
-      <p class="muted">${c.description}</p></div>
-    ${flags.map(fl => `<div class="flag"><b>To discuss with your coach:</b> ${fl.meaning}</div>`).join('')}
+      <span class="tierchip tier-${c.tier}">${c.tier}</span><b>${esc(c.title)}</b>
+      <p class="muted">${esc(c.description)}</p></div>`
+      : `<p class="muted">We don't have a course mapped for this tier and role yet — your coach will route you from here.</p>`}
+    ${flags.map(fl => `<div class="flag"><b>To discuss with your coach:</b> ${esc(fl.meaning)}</div>`).join('')}
     <p class="muted">Placement is confirmed by a coach against your evidence — this is a starting point, not a verdict.</p>
   </div>`;
   document.getElementById('diagresult').scrollIntoView({ behavior: 'smooth' });
