@@ -22,8 +22,13 @@ MD = markdown.Markdown(extensions=["tables"])
 
 def parse_md(path):
     text = pathlib.Path(path).read_text(encoding="utf-8")
-    _, fm, body = text.split("---", 2)
-    meta = yaml.safe_load(fm)
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        raise ValueError(f"{path}: no YAML frontmatter (expected a '---' fenced block at the top)")
+    _, fm, body = parts
+    meta = yaml.safe_load(fm) or {}
+    if not isinstance(meta, dict):
+        raise ValueError(f"{path}: frontmatter did not parse as a key/value mapping")
     for k, v in meta.items():
         if isinstance(v, datetime.date):
             meta[k] = v.isoformat()
@@ -36,14 +41,32 @@ def parse_md(path):
     return meta, MD.convert(body)
 
 
+def load_json(path):
+    """Read a required JSON file, failing with a clear message instead of a traceback."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        sys.exit(f"BUILD FAILED — missing required file: {path}")
+    except json.JSONDecodeError as e:
+        sys.exit(f"BUILD FAILED — invalid JSON in {path}: {e}")
+
+
 def main():
     # --- validate content before building (broken content should fail the build, not ship) ---
-    lesson_schema = json.load(open(CONTENT / "schemas" / "lesson.schema.json"))
-    diag_schema = json.load(open(CONTENT / "schemas" / "diagnostic.schema.json"))
+    lesson_schema = load_json(CONTENT / "schemas" / "lesson.schema.json")
+    diag_schema = load_json(CONTENT / "schemas" / "diagnostic.schema.json")
 
     lessons, errors = {}, []
     for p in sorted(glob.glob(str(CONTENT / "lessons" / "*.md"))):
-        meta, html = parse_md(p)
+        try:
+            meta, html = parse_md(p)
+        except Exception as e:
+            errors.append(str(e))
+            continue
+        if "id" not in meta:
+            errors.append(f"{p}: missing required frontmatter field 'id'")
+            continue
         for key, val in meta.items():
             sub = lesson_schema["properties"].get(key)
             if sub is None:
@@ -53,26 +76,36 @@ def main():
                 validate(val, sub)
             except Exception as e:
                 errors.append(f"{p}: {key}: {e}")
+        if meta["id"] in lessons:
+            errors.append(f"{p}: duplicate lesson id '{meta['id']}'")
+            continue
         lessons[meta["id"]] = {"meta": meta, "html": html}
 
     library = {}
     for p in sorted(glob.glob(str(ROOT / "library" / "evolution" / "*.md"))):
-        meta, html = parse_md(p)
+        try:
+            meta, html = parse_md(p)
+        except Exception as e:
+            errors.append(str(e))
+            continue
+        if "id" not in meta:
+            errors.append(f"{p}: missing required frontmatter field 'id'")
+            continue
         library[meta["id"]] = {"meta": meta, "html": html}
 
-    roles = json.load(open(CONTENT / "roles.json"))
-    courses = json.load(open(CONTENT / "courses.json"))
-    diagnostic = json.load(open(CONTENT / "diagnostic.json"))
-    teasers = json.load(open(CONTENT / "teasers.json"))
+    roles = load_json(CONTENT / "roles.json")
+    courses = load_json(CONTENT / "courses.json")
+    diagnostic = load_json(CONTENT / "diagnostic.json")
+    teasers = load_json(CONTENT / "teasers.json")
     validate(diagnostic, diag_schema)
 
-    # referential integrity
+    # referential integrity (tolerate malformed rows — report, don't crash)
     for c in courses:
-        for lid in c["lessonIds"]:
+        for lid in c.get("lessonIds", []):
             if lid not in lessons:
-                errors.append(f"courses.json: {c['id']} references missing lesson {lid}")
-    course_ids = {c["id"] for c in courses}
-    for tier, routes in diagnostic["routing"]["tiers"].items():
+                errors.append(f"courses.json: {c.get('id', '(no id)')} references missing lesson {lid}")
+    course_ids = {c.get("id") for c in courses}
+    for tier, routes in diagnostic.get("routing", {}).get("tiers", {}).items():
         for role, cid in routes.items():
             if cid not in course_ids:
                 errors.append(f"diagnostic.json: tier {tier}/{role} routes to missing course {cid}")
@@ -119,7 +152,7 @@ def main():
     dist.mkdir(exist_ok=True)
     (dist / "index.html").write_text(out, encoding="utf-8")
     print(f"OK: app/dist/index.html — {len(lessons)} lessons, {len(courses)} courses, "
-          f"{len(library)} library entries, {len(teasers['teasers'])} teasers")
+          f"{len(library)} library entries, {len(teasers.get('teasers', []))} teasers")
 
 
 if __name__ == "__main__":
