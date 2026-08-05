@@ -1,0 +1,127 @@
+{
+  "id": "monday-morning-diagnostic",
+  "version": "1.1",
+  "source": "docs/maturity-model.md \u2014 Placement: the Monday-Morning Diagnostic",
+  "principle": "Place by observed behavior, not self-assessment. Self-assessment over-places almost everyone. Every question demands evidence, not opinion.",
+  "checks": [
+    {
+      "id": "q1_unprompted_use",
+      "question": "Did you reach for an AI tool this week without being told or reminded to?",
+      "evidencePrompt": "Tell me about the last time. What was the task?",
+      "options": [
+        "no",
+        "yes"
+      ]
+    },
+    {
+      "id": "q2_prompt_shape",
+      "question": "When you ask an AI for something, do you routinely tell it the context, the task, and who the output is for?",
+      "evidencePrompt": "Show me (or recite) a recent prompt you actually used.",
+      "options": [
+        "no",
+        "yes"
+      ]
+    },
+    {
+      "id": "q3_reuse",
+      "question": "Do you use a prompt library or shared templates \u2014 and do you maintain or curate one?",
+      "evidencePrompt": "Show me the library. When was it last updated, and by whom?",
+      "options": [
+        "none",
+        "use",
+        "maintain"
+      ]
+    },
+    {
+      "id": "q4_workflow_design",
+      "question": "Have you defined a repeatable AI workflow that someone else runs?",
+      "evidencePrompt": "Who runs it? Show me the documentation they run it from.",
+      "options": [
+        "no",
+        "yes"
+      ]
+    },
+    {
+      "id": "q5_system_design",
+      "question": "Have you built schemas, evaluation pipelines, or governance that others operate within?",
+      "evidencePrompt": "Show me the artifact and name one person constrained by it.",
+      "options": [
+        "no",
+        "yes"
+      ]
+    }
+  ],
+  "placementRule": {
+    "type": "conjunctive-ladder",
+    "description": "A tier is awarded only when its gate AND every lower gate passes. Higher-tier answers with failed lower gates are disregarded for placement (ambiguity routes to the lower tier by rule) and emitted as flags for coach follow-up.",
+    "gates": {
+      "tier2": "q1_unprompted_use == 'yes' AND q2_prompt_shape == 'yes'",
+      "tier3": "tier2 AND q3_reuse == 'maintain' AND q4_workflow_design == 'yes'",
+      "tier4": "tier3 AND q5_system_design == 'yes'"
+    },
+    "resolution": "tier = 4 if tier4 else 3 if tier3 else 2 if tier2 else 1"
+  },
+  "flags": [
+    {
+      "id": "orphan_system_design",
+      "when": "q5_system_design == 'yes' AND placement < 4",
+      "meaning": "Claims system design without the fluency ladder beneath it. Verify the artifact \u2014 possible over-claim, or possible mis-scored lower checks."
+    },
+    {
+      "id": "orphan_workflow_design",
+      "when": "q4_workflow_design == 'yes' AND placement < 3",
+      "meaning": "Claims a workflow others run, but doesn't maintain a library or lacks Tier 2 habits. Ask who actually runs it."
+    },
+    {
+      "id": "orphan_curation",
+      "when": "q3_reuse == 'maintain' AND placement < 2",
+      "meaning": "Curates a library without unprompted use or structured prompts. Likely inherited ownership rather than practice \u2014 verify the update history."
+    }
+  ],
+  "routing": {
+    "description": "recommendedCourse = routing[tier][roleId]. Course is the bridge that STARTS at the placed tier.",
+    "tiers": {
+      "1": {
+        "pm": "aware-foundations",
+        "coach": "aware-foundations",
+        "designer": "aware-foundations",
+        "leader": "aware-foundations",
+        "engineer": "aware-eng",
+        "tl": "aware-eng",
+        "data": "aware-eng"
+      },
+      "2": {
+        "pm": "enabled-pm",
+        "coach": "enabled-pm",
+        "designer": "enabled-design",
+        "leader": "leader-literacy",
+        "engineer": "enabled-eng",
+        "tl": "enabled-eng",
+        "data": "enabled-eng"
+      },
+      "3": {
+        "pm": "fluent-chains",
+        "designer": "fluent-chains",
+        "engineer": "fluent-chains",
+        "data": "fluent-chains",
+        "coach": "native-systems",
+        "tl": "native-systems",
+        "leader": "native-systems"
+      },
+      "4": {
+        "pm": "native-systems",
+        "coach": "native-systems",
+        "designer": "native-systems",
+        "leader": "native-systems",
+        "engineer": "native-systems",
+        "tl": "native-systems",
+        "data": "native-systems"
+      }
+    },
+    "notes": {
+      "leader_tier2": "A leader placed at Tier 2 has hit the habits half of their target (Tier 2 + Tier 4 literacy, per the role\u00d7tier matrix); the remaining program is the literacy strand. Routes to leader-literacy (D5\u2013D7). Interim enabled-pm route retired 2026-07-10 when BACKLOG 5 shipped.",
+      "tier3_non_coach_track": "pm/designer/engineer/data placed at Tier 3 route to fluent-chains for artifact certification \u2014 placement is behavioral, but tier standing requires the artifacts (assessment = artifacts + observed behavior). tl/leader/coach route to native-systems, their 3\u21924 bridge.",
+      "tier4": "All roles route to native-systems. Roles outside its roleIds (pm/designer/engineer/data) join as case-study contributors / Evolution Library curator candidates rather than cohort members \u2014 coach discretion, but the course id is always valid."
+    }
+  }
+}
