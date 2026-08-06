@@ -101,6 +101,8 @@ const store = {
   // the learner's own red lines — their A5 artifact, kept so it can appear at the moment of pasting
   get redlines() { return localStorage.getItem('redlines') || ''; },
   set redlines(v) { localStorage.setItem('redlines', v); },
+  diagnostic() { return JSON.parse(localStorage.getItem('diagnosticSubmission') || '{}'); },
+  saveDiagnostic(o) { localStorage.setItem('diagnosticSubmission', JSON.stringify(o)); },
   subs() { return JSON.parse(localStorage.getItem('submissions') || '[]'); },
   saveSubs(a) { localStorage.setItem('submissions', JSON.stringify(a)); }
 };
@@ -287,7 +289,7 @@ const views = {
       ${d.checks.map((c, i) => `<div class="card">
         <b>${i + 1}. ${c.question}</b>
         ${c.options.map(o => `<label class="opt"><input type="radio" name="${c.id}" value="${o}" required> ${o}</label>`).join('')}
-        <label class="opt muted">${c.evidencePrompt}<textarea name="${c.id}_evidence" placeholder="Evidence — a coach will read this."></textarea></label>
+        <label class="opt muted">${c.evidencePrompt}<textarea name="${c.id}_evidence" placeholder="Evidence — a coach will read this." required></textarea></label>
       </div>`).join('')}
       <button type="submit">Place me</button>
     </form>
@@ -446,13 +448,24 @@ function notifyMe(id) {
 }
 function submitDiag(ev) {
   ev.preventDefault();
-  const f = new FormData(ev.target), ans = {};
-  DATA.diagnostic.checks.forEach(c => ans[c.id] = f.get(c.id));
+  const f = new FormData(ev.target), ans = {}, evidence = {};
+  DATA.diagnostic.checks.forEach(c => {
+    ans[c.id] = f.get(c.id);
+    evidence[c.id] = f.get(`${c.id}_evidence`);
+  });
   const tier = placeTier(ans);
   store.tier = String(tier);
   const course = DATA.diagnostic.routing.tiers[String(tier)][store.role];
   const c = DATA.courses.find(x => x.id === course);
   const flags = diagFlags(ans, tier);
+  store.saveDiagnostic({
+    submittedAt: new Date().toISOString(),
+    role: store.role,
+    tier,
+    course,
+    answers: ans,
+    evidence
+  });
   document.getElementById('diagresult').innerHTML = `<div class="card">
     <h3>Placement: Tier ${tier}</h3>
     <p>Recommended course:</p>

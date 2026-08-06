@@ -12,17 +12,14 @@
     "description": "Build the vocabulary and mental models to work effectively with AI tools. No prior AI experience required.",
     "lessonIds": [
       "A0",
-      "A9",
-      "A8",
       "A5",
       "A6",
-      "A7",
       "A1",
       "A2",
       "A3",
       "A4"
     ],
-    "totalCredits": 9.5
+    "totalCredits": 6.5
   },
   {
     "id": "aware-eng",
@@ -36,17 +33,14 @@
     "description": "Establish AI vocabulary, tool selection principles, and first structured prompts for engineering work.",
     "lessonIds": [
       "A0",
-      "A9",
-      "A8",
       "A5",
       "A6",
-      "A7",
       "A1",
       "A2E",
       "A3E",
       "A4"
     ],
-    "totalCredits": 9.5
+    "totalCredits": 6.5
   },
   {
     "id": "enabled-pm",

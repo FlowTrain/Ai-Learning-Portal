@@ -38,6 +38,22 @@ def parse_md(path):
 
 def main():
     # --- validate content before building (broken content should fail the build, not ship) ---
+    required_inputs = [
+        CONTENT / "schemas" / "lesson.schema.json",
+        CONTENT / "schemas" / "diagnostic.schema.json",
+        CONTENT / "roles.json",
+        CONTENT / "courses.json",
+        CONTENT / "diagnostic.json",
+        CONTENT / "teasers.json",
+        ROOT / "library" / "evolution",
+    ]
+    missing_inputs = [p for p in required_inputs if not p.exists()]
+    if missing_inputs:
+        print("BUILD FAILED — missing required content inputs:")
+        for p in missing_inputs:
+            print(" -", p.relative_to(ROOT))
+        sys.exit(1)
+
     lesson_schema = json.load(open(CONTENT / "schemas" / "lesson.schema.json"))
     diag_schema = json.load(open(CONTENT / "schemas" / "diagnostic.schema.json"))
 

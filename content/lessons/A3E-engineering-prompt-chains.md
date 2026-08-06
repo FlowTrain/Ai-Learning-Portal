@@ -37,4 +37,4 @@ Document a 3-step engineering chain for a workflow in your current sprint or pro
 - eng-chain-[workflow].md with 3 named steps
 - Each step: prompt template, expected output, validation criteria
 - Each step labeled: 'Automation Candidate' or 'Human Review Required' with rationale
-- Time-saving estimate: current manual
+- Time-saving estimate: current manual effort vs. chain-assisted effort (weekly minutes saved)
