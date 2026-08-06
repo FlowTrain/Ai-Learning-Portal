@@ -45,6 +45,7 @@ def main():
         CONTENT / "courses.json",
         CONTENT / "diagnostic.json",
         CONTENT / "teasers.json",
+        CONTENT / "lessons",
         ROOT / "library" / "evolution",
     ]
     missing_inputs = [p for p in required_inputs if not p.exists()]

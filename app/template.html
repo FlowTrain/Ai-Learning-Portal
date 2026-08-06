@@ -101,7 +101,7 @@ const store = {
   // the learner's own red lines — their A5 artifact, kept so it can appear at the moment of pasting
   get redlines() { return localStorage.getItem('redlines') || ''; },
   set redlines(v) { localStorage.setItem('redlines', v); },
-  diagnostic() { return JSON.parse(localStorage.getItem('diagnosticSubmission') || '{}'); },
+  get diagnosticSubmission() { return JSON.parse(localStorage.getItem('diagnosticSubmission') || '{}'); },
   saveDiagnostic(o) { localStorage.setItem('diagnosticSubmission', JSON.stringify(o)); },
   subs() { return JSON.parse(localStorage.getItem('submissions') || '[]'); },
   saveSubs(a) { localStorage.setItem('submissions', JSON.stringify(a)); }
@@ -373,7 +373,7 @@ const views = {
         <div class="subitem">
           <span class="tierchip tier-${s.tier}">${s.tier}</span>
           <b>${esc(s.lessonId)} — ${esc(s.lessonTitle)}</b>
-          ${s.gradedAt ? '<span class="graded">✓ graded</span>' : ''}
+          ${s.gradedAt ? '<span class="graded">✓ evaluated</span>' : ''}
         </div>
         <p class="muted">${roleTitle(s.role)} · placed ${esc(s.placedTier)} · handed in ${new Date(s.submittedAt).toLocaleString()}</p>
         <div class="artifact">${esc(s.artifact)}</div>
@@ -451,7 +451,7 @@ function submitDiag(ev) {
   const f = new FormData(ev.target), ans = {}, evidence = {};
   DATA.diagnostic.checks.forEach(c => {
     ans[c.id] = f.get(c.id);
-    evidence[c.id] = f.get(`${c.id}_evidence`);
+    evidence[c.id] = f.get(`${c.id}_evidence`) || '';
   });
   const tier = placeTier(ans);
   store.tier = String(tier);
