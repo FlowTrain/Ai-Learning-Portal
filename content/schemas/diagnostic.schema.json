@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Diagnostic",
+  "type": "object",
+  "required": ["id", "version", "checks", "placementRule", "routing"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "version": { "type": "string" },
+    "source": { "type": "string" },
+    "principle": { "type": "string" },
+    "checks": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "required": ["id", "question", "evidencePrompt", "options"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^q[1-5]_[a-z_]+$" },
+          "question": { "type": "string" },
+          "evidencePrompt": { "type": "string" },
+          "options": { "type": "array", "minItems": 2, "items": { "type": "string" } }
+        }
+      }
+    },
+    "placementRule": {
+      "type": "object",
+      "required": ["type", "gates", "resolution"],
+      "properties": {
+        "type": { "const": "conjunctive-ladder" },
+        "description": { "type": "string" },
+        "gates": {
+          "type": "object",
+          "required": ["tier2", "tier3", "tier4"],
+          "additionalProperties": { "type": "string" }
+        },
+        "resolution": { "type": "string" }
+      }
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "when", "meaning"],
+        "properties": {
+          "id": { "type": "string" },
+          "when": { "type": "string" },
+          "meaning": { "type": "string" }
+        }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "required": ["tiers"],
+      "properties": {
+        "description": { "type": "string" },
+        "tiers": {
+          "type": "object",
+          "required": ["1", "2", "3", "4"],
+          "additionalProperties": false,
+          "patternProperties": {
+            "^[1-4]$": {
+              "type": "object",
+              "required": ["pm", "coach", "engineer", "designer", "data", "tl", "leader"],
+              "additionalProperties": false,
+              "patternProperties": {
+                "^(pm|coach|engineer|designer|data|tl|leader)$": { "type": "string" }
+              }
+            }
+          }
+        },
+        "notes": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    }
+  }
+}

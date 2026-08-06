@@ -1,0 +1,178 @@
+[
+  {
+    "id": "aware-foundations",
+    "title": "AI Foundations for Product Teams",
+    "tier": "aware",
+    "roleIds": [
+      "pm",
+      "coach",
+      "designer",
+      "leader"
+    ],
+    "description": "Build the vocabulary and mental models to work effectively with AI tools. No prior AI experience required.",
+    "lessonIds": [
+      "A0",
+      "A9",
+      "A8",
+      "A5",
+      "A6",
+      "A7",
+      "A1",
+      "A2",
+      "A3",
+      "A4"
+    ],
+    "totalCredits": 9.5
+  },
+  {
+    "id": "aware-eng",
+    "title": "AI Foundations for Engineers",
+    "tier": "aware",
+    "roleIds": [
+      "engineer",
+      "tl",
+      "data"
+    ],
+    "description": "Establish AI vocabulary, tool selection principles, and first structured prompts for engineering work.",
+    "lessonIds": [
+      "A0",
+      "A9",
+      "A8",
+      "A5",
+      "A6",
+      "A7",
+      "A1",
+      "A2E",
+      "A3E",
+      "A4"
+    ],
+    "totalCredits": 9.5
+  },
+  {
+    "id": "enabled-pm",
+    "title": "AI-Enabled Product Work",
+    "tier": "enabled",
+    "roleIds": [
+      "pm",
+      "coach"
+    ],
+    "description": "Integrate AI into PRD authoring, backlog refinement, stakeholder communication, and test planning.",
+    "lessonIds": [
+      "B1",
+      "B2",
+      "B3",
+      "B4"
+    ],
+    "totalCredits": 4
+  },
+  {
+    "id": "enabled-eng",
+    "title": "AI-Enabled Engineering",
+    "tier": "enabled",
+    "roleIds": [
+      "engineer",
+      "tl",
+      "data"
+    ],
+    "description": "Use AI for code review, documentation, test generation, and structured output from engineering context.",
+    "lessonIds": [
+      "B1E",
+      "B2E",
+      "B3E",
+      "B4"
+    ],
+    "totalCredits": 4
+  },
+  {
+    "id": "enabled-design",
+    "title": "AI-Enabled Design",
+    "tier": "enabled",
+    "roleIds": [
+      "designer"
+    ],
+    "description": "Use AI to accelerate UX research synthesis, generate design specs, and describe interfaces in system language.",
+    "lessonIds": [
+      "B1D",
+      "B2D",
+      "B3",
+      "B4",
+      "B5D"
+    ],
+    "totalCredits": 5
+  },
+  {
+    "id": "fluent-chains",
+    "title": "AI-Fluent: Workflow Design",
+    "tier": "fluent",
+    "roleIds": [
+      "pm",
+      "coach",
+      "engineer",
+      "tl",
+      "designer",
+      "data",
+      "leader"
+    ],
+    "description": "Design reusable prompt chains, author skill packages, govern token costs, and build AI-ready context for agentic systems.",
+    "lessonIds": [
+      "C1",
+      "C2",
+      "C3",
+      "C4",
+      "C5"
+    ],
+    "totalCredits": 5
+  },
+  {
+    "id": "tooling-misconceptions",
+    "title": "Skills & Tooling: What Actually Breaks",
+    "tier": "fluent",
+    "roleIds": [
+      "coach",
+      "tl",
+      "engineer",
+      "pm"
+    ],
+    "description": "The quiet failure modes of AI skills and tooling: why a skill never loads, how to write a description that actually gets selected, whether a skill is a control you can evidence, and how to keep a document's format from outrunning its source.",
+    "lessonIds": [
+      "C6",
+      "C7",
+      "C8"
+    ],
+    "totalCredits": 3
+  },
+  {
+    "id": "native-systems",
+    "title": "AI-Native: System Design",
+    "tier": "native",
+    "roleIds": [
+      "tl",
+      "leader",
+      "coach"
+    ],
+    "description": "Architect AI-first product systems. Build evaluation pipelines, define org AI strategy, and establish governance at scale.",
+    "lessonIds": [
+      "D1",
+      "D2",
+      "D3",
+      "D4"
+    ],
+    "totalCredits": 4
+  },
+  {
+    "id": "leader-literacy",
+    "title": "AI Literacy for Leaders: Fund, Govern, Measure",
+    "tier": "native",
+    "roleIds": [
+      "leader"
+    ],
+    "description": "Tier 4 literacy for directors and VPs \u2014 fund AI workflows, set risk-tier policy, and measure maturity by behavior. Explicitly not the architect track: you write the 'what', your architects build the 'how'.",
+    "lessonIds": [
+      "D5",
+      "D6",
+      "D7",
+      "D8"
+    ],
+    "totalCredits": 4
+  }
+]
