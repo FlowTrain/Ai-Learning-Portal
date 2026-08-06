@@ -5,19 +5,28 @@ Library. Run after adding or renaming lessons:  python app/build_index.py
 The one-liner prefers a "you'll leave with…" payoff sentence from the lesson's
 opening blockquote, falling back to its last sentence.
 """
-import json, glob, re, datetime, pathlib
+import json, glob, re, sys, datetime, pathlib
+
+try:
+    import yaml
+except ImportError:
+    sys.exit("Missing dependency: pyyaml. Run: pip install pyyaml")
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
 def parse(path):
     t = pathlib.Path(path).read_text(encoding="utf-8")
-    _, fm, body = t.split("---", 2)
-    meta = {}
-    for line in fm.strip().splitlines():
-        m = re.match(r"([A-Za-z0-9_]+):\s*(.*)", line)
-        if m and m.group(2).strip() and not line.startswith(" "):
-            meta[m.group(1)] = m.group(2).strip().strip('"')
+    # Same anchored frontmatter match as build.py, then parse it as real YAML so
+    # lists, quoted colons and multi-line values are read correctly — and a '---'
+    # horizontal rule in the body no longer mis-splits the file.
+    fmatch = re.match(r"^\ufeff?---[ \t]*\r?\n(.*?)\r?\n---[ \t]*\r?\n(.*)$", t, re.S)
+    if not fmatch:
+        raise ValueError(f"{path}: no YAML frontmatter (expected a '---' fenced block at the very top)")
+    fm, body = fmatch.group(1), fmatch.group(2)
+    meta = yaml.safe_load(fm) or {}
+    if not isinstance(meta, dict):
+        raise ValueError(f"{path}: frontmatter did not parse as a key/value mapping")
     lines = body.splitlines()
     title = next((l[2:].strip() for l in lines if l.startswith("# ")), None)
     bq, started = [], False
@@ -53,7 +62,10 @@ def main():
     lib = []
     for p in sorted(glob.glob(str(ROOT / "library" / "evolution" / "*.md"))):
         m, _, _ = parse(p)
-        lib.append((m.get("id", "?"), m.get("practice", "?"), m.get("status", "?"), m.get("referenced_by", "")))
+        ref = m.get("referenced_by", "")
+        if isinstance(ref, list):  # YAML may parse this as a list; render it for the table cell
+            ref = ", ".join(str(x) for x in ref)
+        lib.append((m.get("id", "?"), m.get("practice", "?"), m.get("status", "?"), ref))
 
     tier = {"aware": "Level 1 · AI-Aware", "enabled": "Level 2 · AI-Enabled",
             "fluent": "Level 3 · AI-Fluent", "native": "Level 4 · AI-Native"}

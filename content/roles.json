@@ -1,0 +1,86 @@
+[
+  {
+    "id": "pm",
+    "title": "Product Manager",
+    "track": "product",
+    "description": "Owns product strategy, roadmap, and cross-functional delivery. Interfaces with engineering, design, and stakeholders.",
+    "businessOutcomes": [
+      "PRDs generated from structured context in < 30 min",
+      "AI-assisted backlog grooming reduces estimation time by 40%",
+      "Automated stakeholder communication chains deployed",
+      "AI evaluates acceptance criteria before sprint start"
+    ]
+  },
+  {
+    "id": "coach",
+    "title": "Product Coach",
+    "track": "product",
+    "description": "Upskills product managers and engineers. Facilitates AI adoption, coaches prompt discipline, and curates team knowledge assets.",
+    "businessOutcomes": [
+      "Every PM on their roster has a maintained prompt library",
+      "Shared skill packages deployed for 3+ repeatable workflows",
+      "CLAUDE.md context files live in every agentic project",
+      "Coaches can evaluate AI output without running it themselves"
+    ]
+  },
+  {
+    "id": "engineer",
+    "title": "Software Engineer",
+    "track": "engineering",
+    "description": "Builds and ships software. Uses AI for code generation, review, documentation, and test authoring.",
+    "businessOutcomes": [
+      "AI-assisted PR reviews reduce review cycle by 50%",
+      "Test generation from specs happens automatically",
+      "Architecture decisions documented with AI synthesis",
+      "Incident postmortems AI-drafted within 2 hrs of resolution"
+    ]
+  },
+  {
+    "id": "designer",
+    "title": "UX/Product Designer",
+    "track": "design",
+    "description": "Designs product experiences. Uses AI to accelerate research synthesis, generate design specs, and describe UI in system language.",
+    "businessOutcomes": [
+      "Design specs generated from user research in Storybook-ready format",
+      "Figma AI used with pre-refined prompts (no wasted credits)",
+      "Accessibility audit chains run automatically on new screens",
+      "UX layout descriptions feed directly into engineering context"
+    ]
+  },
+  {
+    "id": "data",
+    "title": "Data / Analytics Engineer",
+    "track": "data",
+    "description": "Builds data pipelines, metrics, and analytical systems. Uses AI for query generation, documentation, and anomaly detection.",
+    "businessOutcomes": [
+      "SQL generation from plain-language business questions",
+      "Data pipeline docs auto-generated and versioned",
+      "Anomaly detection prompts packaged as shared skills",
+      "Metric definitions encoded in AI-readable context files"
+    ]
+  },
+  {
+    "id": "tl",
+    "title": "Tech Lead / Staff Engineer",
+    "track": "engineering",
+    "description": "Sets technical direction, leads architecture decisions, and mentors engineers. Responsible for AI governance within engineering.",
+    "businessOutcomes": [
+      "AI cost governance policy authored and enforced team-wide",
+      "Architecture decision records generated with AI synthesis",
+      "AI evaluation pipelines designed for all production LLM uses",
+      "Team AI skill library maintained and versioned quarterly"
+    ]
+  },
+  {
+    "id": "leader",
+    "title": "Engineering / Product Leader",
+    "track": "leadership",
+    "description": "Director or VP-level. Accountable for team AI maturity, org-level AI strategy, and business outcomes from AI investment.",
+    "businessOutcomes": [
+      "Org-wide AI maturity dashboard with role-specific KPIs",
+      "AI investment ROI tracked per workflow automation",
+      "AI governance framework published and adopted team-wide",
+      "100% of new hires complete AI-Enabled tier within 60 days"
+    ]
+  }
+]

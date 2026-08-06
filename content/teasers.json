@@ -1,0 +1,102 @@
+{
+  "id": "architect-zone-teasers",
+  "version": "1.1",
+  "purpose": "Interest-gathering stubs for the Tier 4 architect-track depth (BACKLOG 6, deferred by owner decision 2026-07-10). Clickable marketing cards, not lessons. Every click is a demand signal — see docs/interest-capture.md for what the signals decide. Teaser topics informed by the Quantic MSAIE Class of Nov 2027 cohort syllabus (owner-provided, 2026-07).",
+  "zoneTitle": "The Architect Track — In the Workshop",
+  "zoneIntro": "The deep end of the platform: designing, evaluating, and governing AI systems at production scale. These modules are being built from real platform work — not textbook exercises. Tap what you'd take. We build in order of demand.",
+  "teasers": [
+    {
+      "id": "t-case-platform",
+      "title": "Case Study: Building This Platform",
+      "hook": "The learning platform you're using was designed, evaluated, and governed with the exact practices it teaches. Walk through the real decisions — including the ones that went wrong.",
+      "plannedTier": "native",
+      "audience": [
+        "tl",
+        "leader",
+        "coach",
+        "engineer"
+      ],
+      "backlogRef": "BACKLOG 6 (owner-authored case study)",
+      "status": "interest-gathering"
+    },
+    {
+      "id": "t-eval-harness",
+      "title": "Capstone Lab: Design an Evaluation Harness",
+      "hook": "Pick one workflow your team runs with AI today. Leave with a working eval pipeline that tells you — before your users do — when it quietly gets worse.",
+      "plannedTier": "native",
+      "audience": [
+        "tl",
+        "engineer",
+        "data"
+      ],
+      "backlogRef": "BACKLOG 6 (capstone)",
+      "status": "interest-gathering"
+    },
+    {
+      "id": "t-governance-drill",
+      "title": "Governance Drill: The Model Update That Breaks Things",
+      "hook": "A tabletop exercise: the vendor ships a model update overnight and three of your AI workflows start behaving differently. Who notices, who decides, who rolls back? Find out before it's real.",
+      "plannedTier": "native",
+      "audience": [
+        "tl",
+        "leader",
+        "coach"
+      ],
+      "backlogRef": "BACKLOG 6 (governance simulation)",
+      "status": "interest-gathering"
+    },
+    {
+      "id": "t-agentic-workflows",
+      "title": "Agentic Workflow Engineering",
+      "hook": "Beyond chains: planner, implementer, tester, reviewer — designing multi-agent workflows with bounded scopes, tool contracts, and failure protocols that survive contact with production.",
+      "plannedTier": "native",
+      "audience": [
+        "tl",
+        "engineer",
+        "data"
+      ],
+      "backlogRef": "Quantic MSAIE capability area; agent-orchestration Evolution Library entry (published 2026-07-10)",
+      "status": "interest-gathering"
+    },
+    {
+      "id": "t-foundation-integration",
+      "title": "Foundation Model Integration Patterns",
+      "hook": "Model selection, fallback tiers, caching, and the rowboat-vs-speedboat economics of routing work between small local models and frontier ones.",
+      "plannedTier": "native",
+      "audience": [
+        "tl",
+        "engineer",
+        "data"
+      ],
+      "backlogRef": "Quantic MSAIE capability area; token-economics Evolution Library entry (published 2026-07-10)",
+      "status": "interest-gathering"
+    },
+    {
+      "id": "t-intelligent-infrastructure",
+      "title": "Scaling Intelligent Infrastructure",
+      "hook": "What changes when it's not one workflow but forty: observability, prompt/version control, drift detection, and the platform team that keeps organizational AI honest.",
+      "plannedTier": "native",
+      "audience": [
+        "tl",
+        "leader",
+        "engineer"
+      ],
+      "backlogRef": "Quantic MSAIE capability area; D-series expansion",
+      "status": "interest-gathering"
+    },
+    {
+      "id": "t-fine-tuning-decision",
+      "title": "Fine-Tune or Prompt? The Shape-the-Model Decision",
+      "hook": "Sometimes the answer isn't a better prompt or more context — it's changing the model itself. When fine-tuning beats prompting, what it costs, and why it's usually the wrong first move.",
+      "plannedTier": "native",
+      "audience": [
+        "tl",
+        "engineer",
+        "data",
+        "leader"
+      ],
+      "backlogRef": "Gap identified from Quantic MSAIE syllabus (ML → AI Model Fine-Tuning block); no current-catalog analog",
+      "status": "interest-gathering"
+    }
+  ]
+}

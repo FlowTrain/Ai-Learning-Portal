@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EvolutionEntry",
+  "type": "object",
+  "required": [
+    "id",
+    "practice",
+    "status",
+    "last_reviewed",
+    "review_cadence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "practice": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "current",
+        "watch",
+        "superseded"
+      ]
+    },
+    "last_reviewed": {
+      "type": "string",
+      "format": "date"
+    },
+    "review_cadence": {
+      "enum": [
+        "monthly",
+        "quarterly",
+        "biannual"
+      ]
+    },
+    "model_generations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "referenced_by": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lesson ids citing this entry"
+    },
+    "curators": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "requiredSections": {
+      "const": [
+        "Current guidance",
+        "Eras",
+        "Deprecated patterns",
+        "What survived",
+        "Boundary conditions",
+        "Signals to watch",
+        "Sources"
+      ]
+    }
+  }
+}

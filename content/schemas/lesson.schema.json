@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Lesson",
+  "type": "object",
+  "required": [
+    "id",
+    "courseId",
+    "tier",
+    "roleIds",
+    "durationMin",
+    "title"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z][0-9]+[A-Z]?$"
+    },
+    "courseId": {
+      "type": "string"
+    },
+    "tier": {
+      "enum": [
+        "aware",
+        "enabled",
+        "fluent",
+        "native"
+      ]
+    },
+    "roleIds": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "pm",
+          "coach",
+          "engineer",
+          "designer",
+          "data",
+          "tl",
+          "leader"
+        ]
+      },
+      "minItems": 1
+    },
+    "durationMin": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 45
+    },
+    "creditHours": {
+      "type": "number"
+    },
+    "staircaseRung": {
+      "enum": [
+        1,
+        2,
+        3
+      ],
+      "description": "1=plain language, 2=patterned language, 3=structured format. Every concept enters the curriculum three times."
+    },
+    "buildsBehaviors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Observable maturity-model behaviors this lesson builds, phrased per tier."
+    },
+    "libraryRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Evolution Library entry ids this lesson cites instead of embedding volatile claims."
+    },
+    "title": {
+      "type": "string"
+    },
+    "overview": {
+      "type": "string"
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "body"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "assignmentPrompt": {
+      "type": "string"
+    },
+    "assignmentDeliverables": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "rubric": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion": {
+            "type": "string"
+          },
+          "emerging": {
+            "type": "string"
+          },
+          "working": {
+            "type": "string"
+          },
+          "strong": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Artifact grading rubric; versions with the lesson."
+    }
+  }
+}
