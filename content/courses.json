@@ -61,9 +61,10 @@
       "B1",
       "B2",
       "B3",
-      "B4"
+      "B4",
+      "B5"
     ],
-    "totalCredits": 4
+    "totalCredits": 5
   },
   {
     "id": "enabled-eng",
@@ -119,9 +120,10 @@
       "C2",
       "C3",
       "C4",
-      "C5"
+      "C5",
+      "C9"
     ],
-    "totalCredits": 5
+    "totalCredits": 6
   },
   {
     "id": "tooling-misconceptions",
