@@ -43,4 +43,4 @@ Document one 3-step prompt chain for a workflow you run at least monthly. The ch
 - prompt-chain-[workflow-name].md
 - 3 named steps with: step name, prompt template, expected output, acceptance criteria
 - At least 1 step explicitly labeled as 'Human Judgment Required' with a 2-sentence rationale
-- A note on when this chain would break down (mod
+- A note on when this chain would break down (missing inputs, unclear acceptance criteria, or an irreversible consequence)

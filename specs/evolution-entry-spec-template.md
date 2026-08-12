@@ -1,4 +1,4 @@
-# Evolution Entry Spec — <practice name>
+# Evolution Entry Spec — {practice name}
 
 <!-- Copy to specs/drafts/<practice-id>.spec.md. This is the distillation step
      between research scraps and a library entry. The entry's seven sections

@@ -168,7 +168,13 @@ function showRedlinesEditor() {
   document.getElementById('rl-edit').focus();
 }
 function saveRedlines() { const v = document.getElementById('rl-edit').value.trim(); if (v) { store.redlines = v; render(); } }
-function editRedlines() { store.redlines = ''; render(); }
+function editRedlines() {
+  // Edit, don't erase: pre-fill the current value and let the user amend it.
+  const next = prompt('Edit your red lines:', store.redlines || '');
+  if (next === null) return;           // cancelled — keep existing red lines
+  store.redlines = next.trim();
+  render();
+}
 
 function handIn(id) {
   const l = DATA.lessons[id];
@@ -287,7 +293,7 @@ const views = {
       ${d.checks.map((c, i) => `<div class="card">
         <b>${i + 1}. ${esc(c.question)}</b>
         ${c.options.map(o => `<label class="opt"><input type="radio" name="${esc(c.id)}" value="${esc(o)}" required> ${esc(o)}</label>`).join('')}
-        <label class="opt muted">${esc(c.evidencePrompt)}<textarea name="${esc(c.id)}_evidence" placeholder="Evidence — a coach will read this."></textarea></label>
+        <label class="opt muted">${esc(c.evidencePrompt)}<textarea name="${esc(c.id)}_evidence" required placeholder="Evidence — a coach will read this."></textarea></label>
       </div>`).join('')}
       <button type="submit">Place me</button>
     </form>
@@ -446,10 +452,20 @@ function notifyMe(id) {
 }
 function submitDiag(ev) {
   ev.preventDefault();
-  const f = new FormData(ev.target), ans = {};
-  DATA.diagnostic.checks.forEach(c => ans[c.id] = f.get(c.id));
+  const f = new FormData(ev.target), ans = {}, evidence = {};
+  DATA.diagnostic.checks.forEach(c => {
+    ans[c.id] = f.get(c.id);
+    evidence[c.id] = (f.get(c.id + '_evidence') || '').toString().trim();
+  });
   const tier = placeTier(ans);
   store.tier = String(tier);
+  // Persist the run so the evidence a coach is told they'll read actually survives
+  // navigation/refresh (local-first per the submission-loop plan).
+  try {
+    localStorage.setItem('diagnosticRun', JSON.stringify({
+      at: new Date().toISOString(), role: store.role || 'unknown', tier, answers: ans, evidence,
+    }));
+  } catch (e) { /* storage blocked — placement still proceeds, evidence just isn't retained */ }
   const routes = (DATA.diagnostic.routing.tiers || {})[String(tier)] || {};
   const course = routes[store.role];
   const c = course ? DATA.courses.find(x => x.id === course) : null;

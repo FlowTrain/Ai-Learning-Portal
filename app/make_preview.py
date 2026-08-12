@@ -24,7 +24,8 @@ def main():
         sys.exit("make_preview: app/dist/index.html missing after build.")
 
     lessons = len(glob.glob(str(ROOT / "content" / "lessons" / "*.md")))
-    courses = len(json.load(open(ROOT / "content" / "courses.json")))
+    with open(ROOT / "content" / "courses.json", encoding="utf-8") as f:
+        courses = len(json.load(f))
     today = datetime.date.today().isoformat()
 
     readme = f"""AI Maturity Learning Platform — Preview build ({today})
