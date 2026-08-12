@@ -1,6 +1,6 @@
 # Lesson & Content Index
 
-> Generated from `content/` on 2026-08-01 by `app/build_index.py` (rerun after adding lessons). 38 lessons · 9 courses · 11 Evolution Library entries. Rung: 1 plain · 2 patterned · 3 structured.
+> Generated from `content/` on 2026-08-11 by `app/build_index.py` (rerun after adding lessons). 40 lessons · 9 courses · 13 Evolution Library entries. Rung: 1 plain · 2 patterned · 3 structured.
 
 ## Courses
 
@@ -43,7 +43,7 @@ Establish AI vocabulary, tool selection principles, and first structured prompts
 ### AI-Enabled Product Work  ·  Level 2 · AI-Enabled
 
 Integrate AI into PRD authoring, backlog refinement, stakeholder communication, and test planning.
-*Roles: pm, coach · 4 credits*
+*Roles: pm, coach · 5 credits*
 
 | Lesson | Rung | Min | What you leave with |
 |---|---|---|---|
@@ -51,6 +51,7 @@ Integrate AI into PRD authoring, backlog refinement, stakeholder communication, 
 | **B2** — AI-Assisted PRDs and Stakeholder Comms | 2 | 25 | This lesson builds the workflow that turns rough notes into polished PM artifacts without losing product substance. |
 | **B3** — User Stories to AI-Assisted Test Plans | 2 | 25 | (Why catching it here is cheap and catching it in production isn't — the economics of the left — is tracked in the shift-left-economics Evolution Library entry.) |
 | **B4** — Structured JSON from Product Descriptions | 3 | 25 | This lesson teaches you to turn product descriptions into validated JSON for Storybook configs, service inventories, and automation pipelines — without relying on AI t… |
+| **B5** — Temperature: Setting the Dial as a Requirement | 2 | 25 | By the end you'll leave with a `temperature-policy.md` for one real feature: each use case matched to a range, with a reason and an owner. |
 
 ### AI-Enabled Engineering  ·  Level 2 · AI-Enabled
 
@@ -80,7 +81,7 @@ Use AI to accelerate UX research synthesis, generate design specs, and describe 
 ### AI-Fluent: Workflow Design  ·  Level 3 · AI-Fluent
 
 Design reusable prompt chains, author skill packages, govern token costs, and build AI-ready context for agentic systems.
-*Roles: pm, coach, engineer, tl, designer, data, leader · 5 credits*
+*Roles: pm, coach, engineer, tl, designer, data, leader · 6 credits*
 
 | Lesson | Rung | Min | What you leave with |
 |---|---|---|---|
@@ -89,6 +90,7 @@ Design reusable prompt chains, author skill packages, govern token costs, and bu
 | **C3** — Authoring AI Skills (SKILL.md) | 3 | 30 | This lesson builds your first real skill. |
 | **C4** — Durable AI Context: CLAUDE.md and soul.md | 3 | 30 | This lesson authors both. |
 | **C5** — Where Should the Answers Live? (Three Teams, One Question) | 2 | 30 | This lesson teaches the comparison pattern that turns an unwinnable architecture argument into a decision. |
+| **C9** — Developing an Ear for Model Feel | 2 | 25 | By the end you'll build a `model-feel-field-guide.md` in your own words: each model's idle note, and which job you'd put it on. |
 
 ### Skills & Tooling: What Actually Breaks  ·  Level 3 · AI-Fluent
 
@@ -131,14 +133,16 @@ Versioned 'current best practice' entries that lessons cite (via `libraryRefs`) 
 
 | Entry | Practice | Status | Cited by |
 |---|---|---|---|
-| `agent-orchestration` | Agent Orchestration | current | [A3, A3E, C1, D1] |
-| `agent-skills-format` | Agent Skills (SKILL.md) — Authoring & Discovery | current | [C6, C7] |
-| `ai-product-discovery` | Product Discovery & Customer Centricity with AI | current | [B2, B2D] |
-| `context-engineering` | Context Engineering | current | [B1, B1E, C4, C5] |
-| `context-file-architecture` | Context File Architecture (CLAUDE.md / AGENTS.md / SKILL.md across tools) | current | [C4] |
-| `evaluation-practice` | Evaluation Practice | current | [B3, C1, D1] |
-| `prompting-frameworks` | Prompt Engineering | current | [A2, A2E, A3, A3E, C1, C5] |
-| `schema-driven-ui` | Schema-Driven UI (declaring layout as a contract) | current | [B5D] |
-| `shift-left-economics` | Cost-of-Change / Shift-Left Economics | current | [B3, C5, D5] |
-| `structured-outputs` | Structured Outputs | current | [B4, D1] |
-| `token-economics` | Token Economics / AI Cost Engineering | current | [A4, A2E, C2, C5] |
+| `agent-orchestration` | Agent Orchestration | current | A3, A3E, C1, D1 |
+| `agent-skills-format` | Agent Skills (SKILL.md) — Authoring & Discovery | current | C6, C7 |
+| `ai-product-discovery` | Product Discovery & Customer Centricity with AI | current | B2, B2D |
+| `context-engineering` | Context Engineering | current | B1, B1E, C4, C5 |
+| `context-file-architecture` | Context File Architecture (CLAUDE.md / AGENTS.md / SKILL.md across tools) | current | C4 |
+| `evaluation-practice` | Evaluation Practice | current | B3, C1, D1 |
+| `model-family-tiers` | Model Family & Tier Naming (reading a vendor lineup) | current | C9 |
+| `model-sampling-parameters` | Model Sampling & Reasoning Controls (Temperature → Effort) | current | B5, C9 |
+| `prompting-frameworks` | Prompt Engineering | current | A2, A2E, A3, A3E, C1, C5 |
+| `schema-driven-ui` | Schema-Driven UI (declaring layout as a contract) | current | B5D |
+| `shift-left-economics` | Cost-of-Change / Shift-Left Economics | current | B3, C5, D5 |
+| `structured-outputs` | Structured Outputs | current | B4, D1 |
+| `token-economics` | Token Economics / AI Cost Engineering | current | A4, A2E, C2, C5 |
