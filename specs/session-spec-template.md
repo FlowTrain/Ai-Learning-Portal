@@ -1,4 +1,4 @@
-# Session Spec — <course id> · Week <n> / <session title>
+# Session Spec — {course-id} · Week {n} / {session title}
 
 <!-- Copy to specs/drafts/<course-id>-w<n>.spec.md. This is the contract for one
      facilitated cohort session (the 2→3 bridge format, or any live session).
@@ -45,7 +45,7 @@
 
 | If... | Then... |
 |---|---|
-| <half the cohort submitted | critique the gap, not the absentees — is the assignment mis-pitched a rung too high? |
+| Fewer than half the cohort submitted | critique the gap, not the absentees — is the assignment mis-pitched a rung too high? |
 | Artifacts are synthetic (not real work) | TBD — the standing fix is re-anchoring to their actual sprint/product |
 | One voice dominates critique | TBD |
 

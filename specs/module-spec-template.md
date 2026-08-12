@@ -1,4 +1,4 @@
-# Module Spec — <working title>
+# Module Spec — {working title}
 
 <!-- Copy to specs/drafts/<lesson-id>.spec.md and fill every field.
      Delete guidance comments as you go. "TBD" is allowed while drafting;
@@ -36,7 +36,7 @@
 1. Tier N: TBD
 2. Tier N: TBD
 
-**Opening activity** (plain-language, <5 min, uses their real work): TBD
+**Opening activity** (plain-language, ≤5 min, uses their real work): TBD
 
 ## 4. The artifact
 
@@ -62,7 +62,7 @@
 
 ## 6. Section plan (3–4 sections + assignment)
 
-1. **Start Here: <opening activity>** — TBD
+1. **Start Here: {opening activity}** — TBD
 2. TBD
 3. TBD
 4. **Assignment** — deliverables list, each one checkable: TBD

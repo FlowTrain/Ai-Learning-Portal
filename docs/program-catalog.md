@@ -217,7 +217,7 @@ approval flows and logging. You write documentation a regulator could follow.
 | Class | For these roles | Lessons | Time | Credits |
 |---|---|---|---|---|
 | **AI-Native: System Design** | Tech Lead, Leader, Product Coach | 4 | ~120 min | 4 |
-| **AI Literacy for Leaders: Fund, Govern, Measure** | Engineering / Product Leader | 3 | ~75 min | 3 |
+| **AI Literacy for Leaders: Fund, Govern, Measure** | Engineering / Product Leader | 4 | ~95 min | 4 |
 
 **AI-Native: System Design** — *Architect AI-first product systems. Build evaluation pipelines,
 define org AI strategy, and establish governance at scale.*
@@ -237,6 +237,7 @@ write the "what"; your architects build the "how." This is deliberately **not** 
 | D5 | Funding AI: The Investment One-Pager | 25 min | Patterned |
 | D6 | Governing AI Risk Tiers (Without the Architecture) | 25 min | Patterned |
 | D7 | Measuring AI Maturity: The Dashboard Spec | 25 min | Structured |
+| D8 | What Leaders Get Wrong About AI | 20 min | Patterned |
 
 ---
 
